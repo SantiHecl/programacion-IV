@@ -1,0 +1,6 @@
+@CuponProyecto_HostAddress = http://localhost:5023
+
+GET {{CuponProyecto_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

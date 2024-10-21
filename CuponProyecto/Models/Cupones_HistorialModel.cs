@@ -5,7 +5,7 @@ namespace CuponProyecto.Models
     public class Cupones_HistorialModel
     {
         [Key]
-        public int Id_Cupon { get; set; }
+        public int id_Cupon { get; set; }
         [Key]
         public string NroCupon { get; set; }
         public DateTime FechaUso { get; set; }

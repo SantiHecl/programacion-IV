@@ -6,9 +6,9 @@ namespace CuponProyecto.Models
     public class Cupones_DetallesModel
     {
         [Key]
-        public int Id_Cupon {get; set;}
+        public int id_Cupon {get; set;}
         [Key]
-        public int Id_Articulo { get; set;}
+        public int id_Articulo { get; set;}
         public int Cantidad { get; set;}
     }
 }

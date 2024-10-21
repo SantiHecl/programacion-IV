@@ -6,7 +6,7 @@ namespace CuponProyecto.Models
     public class CuponModel
     {
         [Key]
-        public int Id_Cupon { get; set; }
+        public int id_Cupon { get; set; }
         public string Nombre { get; set; }
         public string Descripcion { get; set; }
         public decimal PorcentajeDto { get; set; }

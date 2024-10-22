@@ -32,7 +32,7 @@ namespace CuponProyecto.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<IEnumerable<Cupones_DetallesModel>>> GetCupones_DetallesModel(int id)
         {
-            var cupones_DetallesModel = await _context.Cupones_Detalle.Where(cd=> cd.Id_Cupon == id).ToListAsync();
+            var cupones_DetallesModel = await _context.Cupones_Detalle.Where(cd=> cd.id_Cupon == id).ToListAsync();
 
             if (cupones_DetallesModel == null)
             {
@@ -47,7 +47,7 @@ namespace CuponProyecto.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutCupones_DetallesModel(int id, Cupones_DetallesModel cupones_DetallesModel)
         {
-            if (id != cupones_DetallesModel.Id_Cupon)
+            if (id != cupones_DetallesModel.id_Cupon)
             {
                 return BadRequest();
             }
@@ -81,7 +81,7 @@ namespace CuponProyecto.Controllers
             _context.Cupones_Detalle.Add(cupones_DetallesModel);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetCupones_DetallesModel", new { id = cupones_DetallesModel.Id_Cupon }, cupones_DetallesModel);
+            return CreatedAtAction("GetCupones_DetallesModel", new { id = cupones_DetallesModel.id_Cupon }, cupones_DetallesModel);
         }
 
         // DELETE: api/Cupones_Detalles/5
@@ -102,7 +102,7 @@ namespace CuponProyecto.Controllers
 
         private bool Cupones_DetallesModelExists(int id)
         {
-            return _context.Cupones_Detalle.Any(e => e.Id_Cupon == id);
+            return _context.Cupones_Detalle.Any(e => e.id_Cupon == id);
         }
     }
 }

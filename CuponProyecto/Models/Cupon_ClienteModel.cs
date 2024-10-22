@@ -6,7 +6,7 @@ namespace CuponProyecto.Models
     public class Cupon_ClienteModel
     {
         [ForeignKey("Id_Cupon")]
-        public int Id_Cupon { get; set; }
+        public int id_Cupon { get; set; }
         [Key]
         public string NroCupon { get; set; }
         public DateTime? FechaAsignado { get; set; }

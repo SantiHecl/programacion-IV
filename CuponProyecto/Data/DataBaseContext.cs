@@ -21,7 +21,7 @@ namespace CuponProyecto.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<CuponModel>()
-                .HasKey(c => c.Id_Cupon);
+                .HasKey(c => c.id_Cupon);
                 modelBuilder.Entity<CategoriaModel>()
                 .HasKey(c => c.Id_Categoria);
                 modelBuilder.Entity<Cupon_CategoriaModel>()
@@ -31,13 +31,13 @@ namespace CuponProyecto.Data
                 modelBuilder.Entity<Cupon_ClienteModel>()
                .HasKey(c => c.NroCupon);
                 modelBuilder.Entity<Cupones_DetallesModel>()
-               .HasKey(c => new {c.Id_Cupon, c.Id_Articulo });
+               .HasKey(c => new {c.id_Cupon, c.id_Articulo });
                 modelBuilder.Entity<ArticuloModel>()
                .HasKey(c => c.Id_Articulo);
                 modelBuilder.Entity<PrecioModel>()
                .HasKey(c => c.Id_Precio);
                 modelBuilder.Entity<Cupones_HistorialModel>()
-               .HasKey(c => new {c.Id_Cupon, c.NroCupon });
+               .HasKey(c => new {c.id_Cupon, c.NroCupon });
 
             base.OnModelCreating(modelBuilder);
         }

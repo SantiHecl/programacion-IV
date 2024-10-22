@@ -47,7 +47,7 @@ namespace CuponProyecto.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutCupones_HistorialModel(int id, Cupones_HistorialModel cupones_HistorialModel)
         {
-            if (id != cupones_HistorialModel.Id_Cupon)
+            if (id != cupones_HistorialModel.id_Cupon)
             {
                 return BadRequest();
             }
@@ -85,7 +85,7 @@ namespace CuponProyecto.Controllers
             }
             catch (DbUpdateException)
             {
-                if (Cupones_HistorialModelExists(cupones_HistorialModel.Id_Cupon))
+                if (Cupones_HistorialModelExists(cupones_HistorialModel.id_Cupon))
                 {
                     return Conflict();
                 }
@@ -95,7 +95,7 @@ namespace CuponProyecto.Controllers
                 }
             }
 
-            return CreatedAtAction("GetCupones_HistorialModel", new { id = cupones_HistorialModel.Id_Cupon }, cupones_HistorialModel);
+            return CreatedAtAction("GetCupones_HistorialModel", new { id = cupones_HistorialModel.id_Cupon }, cupones_HistorialModel);
         }
 
         // DELETE: api/Cupones_Historial/5
@@ -116,7 +116,7 @@ namespace CuponProyecto.Controllers
 
         private bool Cupones_HistorialModelExists(int id)
         {
-            return _context.Cupones_Historial.Any(e => e.Id_Cupon == id);
+            return _context.Cupones_Historial.Any(e => e.id_Cupon == id);
         }
     }
 }

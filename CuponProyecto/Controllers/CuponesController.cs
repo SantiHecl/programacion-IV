@@ -52,7 +52,7 @@ namespace CuponProyecto.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutCuponModel(int id, CuponModel cuponModel)
         {
-            if (id != cuponModel.Id_Cupon)
+            if (id != cuponModel.id_Cupon)
             {
                 return BadRequest();
             }
@@ -86,7 +86,7 @@ namespace CuponProyecto.Controllers
             _context.Cupones.Add(cuponModel);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetCuponModel", new { id = cuponModel.Id_Cupon }, cuponModel);
+            return CreatedAtAction("GetCuponModel", new { id = cuponModel.id_Cupon }, cuponModel);
         }
 
         // DELETE: api/Cupones/5
@@ -107,7 +107,7 @@ namespace CuponProyecto.Controllers
 
         private bool CuponModelExists(int id)
         {
-            return _context.Cupones.Any(e => e.Id_Cupon == id);
+            return _context.Cupones.Any(e => e.id_Cupon == id);
         }
     }
 }

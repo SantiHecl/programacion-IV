@@ -50,15 +50,26 @@ namespace CuponProyecto.Controllers
         }
 
         [HttpPost("QuemadoCupon")]
-        public async Task<ActionResult<Cupones_HistorialModel>> PostQuemadoCupon(Cupones_HistorialModel Cupones_HistorialModel, int id_Cupon, String NroCupon, String CodCliente)
+        public async Task<ActionResult<Cupones_HistorialModel>> PostQuemadoCupon(string nroCupon)
         {
-            Cupones_HistorialModel.id_Cupon = id_Cupon;
-            Cupones_HistorialModel.NroCupon = NroCupon;
-            Cupones_HistorialModel.CodCliente = CodCliente;
-            Cupones_HistorialModel.FechaUso = DateTime.Now;
+            Cupon_ClienteModel cuponCliente = await _context.Cupones_Clientes
+            .FirstOrDefaultAsync(c => c.NroCupon == nroCupon);
 
-            _context.Cupones_Historial.Add(Cupones_HistorialModel);
-            //falta agregar lo de Eliminar registro en Cupones_Clientes.
+            if (cuponCliente == null)
+            {
+                return NotFound("El cupón no existe o ya fue utilizado.");
+            }
+
+            Cupones_HistorialModel cupones_Historial = new Cupones_HistorialModel
+            {
+                CodCliente = cuponCliente.CodCliente,
+                id_Cupon = cuponCliente.id_Cupon,
+                NroCupon = cuponCliente.NroCupon,
+                FechaUso = DateTime.Now
+            };
+            _context.Cupones_Historial.Add(cupones_Historial);
+
+            _context.Cupones_Clientes.Remove(cuponCliente);
             try
             {
                 await _context.SaveChangesAsync();
@@ -68,10 +79,7 @@ namespace CuponProyecto.Controllers
                 return Conflict();
             }
 
-            return Ok(Cupones_HistorialModel);//CreatedAtAction("GetCupones_HistorialModel", new { id = Cupones_HistorialModel.NroCupon }, Cupones_HistorialModel);
+            return Ok($"El cupon {nroCupon} fue utilizado correctamente");//CreatedAtAction("GetCupones_HistorialModel", new { id = Cupones_HistorialModel.NroCupon }, Cupones_HistorialModel);
         }
-
-
-
     }
 }

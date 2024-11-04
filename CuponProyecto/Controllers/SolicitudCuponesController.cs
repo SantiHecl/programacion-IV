@@ -49,7 +49,7 @@ namespace CuponProyecto.Controllers
             return $"{random.Next(100, 1000)}-{random.Next(100, 1000)}-{random.Next(100, 1000)}";
         }
 
-        [HttpPost]
+        [HttpPost("QuemadoCupon")]
         public async Task<ActionResult<Cupones_HistorialModel>> PostQuemadoCupon(Cupones_HistorialModel Cupones_HistorialModel, int id_Cupon, String NroCupon, String CodCliente)
         {
             Cupones_HistorialModel.id_Cupon = id_Cupon;

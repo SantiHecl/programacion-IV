@@ -19,13 +19,9 @@ namespace ClientesApi.Controllers
         private readonly DataBaseContext _context;
         private readonly IClienteService _clienteService;
 
-        public ClientesController(DataBaseContext context)
+        public ClientesController(DataBaseContext context, IClienteService clienteService)
         {
             _context = context;
-        }
-
-        public ClientesController(IClienteService clienteService)
-        {
             _clienteService = clienteService;
         }
 

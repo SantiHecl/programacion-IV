@@ -47,6 +47,7 @@ namespace CuponProyecto.Controllers
 
                 _context.Cupones_Clientes.Add(cupon_Cliente);
                 await _context.SaveChangesAsync();
+                await _sendEmailService.EnviarEmailCliente(clienteDto.Email, nroCupon);
                 return Ok(new
                 {
                     Mensaje = "Se dio de alta el registro",
@@ -81,7 +82,7 @@ namespace CuponProyecto.Controllers
 
             _context.Cupones_Clientes.Remove(cuponCliente);
             
-            // await _sendEmailService.EnviarEmailCliente(ClienteDto.Email, nroCupon);
+            
 
             try
             {

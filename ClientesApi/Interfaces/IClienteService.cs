@@ -1,7 +1,9 @@
-﻿namespace ClientesApi.Interfaces
+﻿using ClientesApi.Models.DTO;
+
+namespace ClientesApi.Interfaces
 {
     public interface IClienteService
     {
-        Task SolicitarCupon();
+        Task <string> SolicitarCupon(ClienteDto clienteDto);
     }
 }

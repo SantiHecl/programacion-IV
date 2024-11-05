@@ -7,7 +7,7 @@ namespace ClientesApi.Controllers
     [ApiController]
     public class Cliente_CuponController : ControllerBase
     {
-        [HttpPost]
-        public
+    //    [HttpPost]
+      //  public
     }
 }

@@ -1,5 +1,9 @@
-﻿using CuponProyecto.Data;
+﻿using ClientesApi.Models.DTO;
+using CuponProyecto.Data;
+using CuponProyecto.Interfaces;
 using CuponProyecto.Models;
+using CuponProyecto.Models.DTO;
+using CuponProyecto.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -11,14 +15,19 @@ namespace CuponProyecto.Controllers
     public class SolicitudCuponesController : ControllerBase
     {
         private readonly DataBaseContext _context;
+        private readonly ICuponesServices _cuponesServices;
+        private readonly ISendEmailService _sendEmailService;
 
-        public SolicitudCuponesController(DataBaseContext context)
+        public SolicitudCuponesController(DataBaseContext context, ICuponesServices cuponesServices, ISendEmailService sendEmailService)
         {
             _context = context;
+            _cuponesServices = cuponesServices;
+            _sendEmailService = sendEmailService;
         }
 
         // POST: api/Cupones
         [HttpPost]
+        
         public async Task<ActionResult<CuponModel>> SolicitudCupon([FromBody] SolicitudCuponesModel solicitudCuponesModel)
         {
             Cupon_ClienteModel cupon_Cliente = new Cupon_ClienteModel();
@@ -38,9 +47,11 @@ namespace CuponProyecto.Controllers
             {
                 return Conflict();
             }
-
+            
             return Ok($"Se le asignó el cupon {cupon_Cliente.NroCupon} al cliente {solicitudCuponesModel.CodCliente}");
         }
+        
+
 
         //Funcion para crear un NroCupon random
         private string GenerarNroCupon()
@@ -70,6 +81,9 @@ namespace CuponProyecto.Controllers
             _context.Cupones_Historial.Add(cupones_Historial);
 
             _context.Cupones_Clientes.Remove(cuponCliente);
+            
+            // await _sendEmailService.EnviarEmailCliente(ClienteDto.Email, nroCupon);
+
             try
             {
                 await _context.SaveChangesAsync();
@@ -78,7 +92,7 @@ namespace CuponProyecto.Controllers
             {
                 return Conflict();
             }
-
+            
             return Ok($"El cupon {nroCupon} fue utilizado correctamente");//CreatedAtAction("GetCupones_HistorialModel", new { id = Cupones_HistorialModel.NroCupon }, Cupones_HistorialModel);
         }
     }

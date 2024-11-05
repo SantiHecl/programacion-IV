@@ -97,7 +97,7 @@ namespace CuponProyecto.Controllers
                 }
             }
 
-            return CreatedAtAction("GetCupon_ClienteModel", new { id = cupon_ClienteModel.NroCupon }, cupon_ClienteModel);
+            return Ok ("Se dio de alta exitosamente en Cupon_Cliente");
         }
 
         // DELETE: api/Cupon_Cliente/5

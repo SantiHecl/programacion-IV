@@ -1,4 +1,6 @@
 using CuponProyecto.Data;
+using CuponProyecto.Interfaces;
+using CuponProyecto.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using System.Text.Json.Serialization;
@@ -16,6 +18,8 @@ builder.Services.AddControllers().AddJsonOptions(options =>
     options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
 });
 
+builder.Services.AddScoped<ICuponesServices, CuponesServices>();
+builder.Services.AddScoped<ISendEmailService, SendEmailService>();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

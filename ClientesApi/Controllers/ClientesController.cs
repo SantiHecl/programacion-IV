@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ClientesApi.Data;
 using ClientesApi.Models;
+using ClientesApi.Interfaces;
+using ClientesApi.Models.DTO;
 
 namespace ClientesApi.Controllers
 {
@@ -15,10 +17,16 @@ namespace ClientesApi.Controllers
     public class ClientesController : ControllerBase
     {
         private readonly DataBaseContext _context;
+        private readonly IClienteService _clienteService;
 
         public ClientesController(DataBaseContext context)
         {
             _context = context;
+        }
+
+        public ClientesController(IClienteService clienteService)
+        {
+            _clienteService = clienteService;
         }
 
         // GET: api/Clientes
@@ -96,6 +104,20 @@ namespace ClientesApi.Controllers
             }
 
             return CreatedAtAction("AltaNuevoCliente", new { id = clientesModel.CodCliente }, clientesModel);
+        }
+
+        [HttpPost("EnviarSolicitudACupones")]
+        public async Task<IActionResult> EnviarSolicitudACupones([FromBody] ClienteDto clienteDto)
+        {
+            try
+            {
+                var respuesta = await _clienteService.SolicitarCupon(clienteDto);
+                return Ok(respuesta);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"Error: {ex.Message}");
+            }
         }
 
         // DELETE: api/Clientes/5

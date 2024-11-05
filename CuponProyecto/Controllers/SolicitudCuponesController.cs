@@ -1,12 +1,13 @@
-﻿using ClientesApi.Models.DTO;
+﻿using CuponProyecto.Models.DTO;
 using CuponProyecto.Data;
 using CuponProyecto.Interfaces;
 using CuponProyecto.Models;
-using CuponProyecto.Models.DTO;
 using CuponProyecto.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+
 
 namespace CuponProyecto.Controllers
 {
@@ -27,37 +28,35 @@ namespace CuponProyecto.Controllers
 
         // POST: api/Cupones
         [HttpPost]
-        
-        public async Task<ActionResult<CuponModel>> SolicitudCupon([FromBody] SolicitudCuponesModel solicitudCuponesModel)
+        public async Task<ActionResult<CuponModel>> SolicitudCupon(ClienteDto clienteDto)
         {
-            Cupon_ClienteModel cupon_Cliente = new Cupon_ClienteModel();
-
-            cupon_Cliente.id_Cupon = solicitudCuponesModel.Id_Cupon;
-            cupon_Cliente.CodCliente = solicitudCuponesModel.CodCliente;
-            cupon_Cliente.NroCupon = GenerarNroCupon();
-            cupon_Cliente.FechaAsignado = DateTime.Now;
-
-            _context.Cupones_Clientes.Add(cupon_Cliente);
-
             try
             {
+                if (clienteDto.Cod_Cliente.IsNullOrEmpty())
+                    throw new Exception("El Dni del cliente no puede estar vacío");
+
+                string nroCupon = await _cuponesServices.GenerarNroCupon();
+
+                Cupon_ClienteModel cupon_Cliente = new Cupon_ClienteModel()
+                {
+                    id_Cupon = clienteDto.Id_Cupon,
+                    CodCliente = clienteDto.Cod_Cliente,
+                    FechaAsignado = DateTime.Now,
+                    NroCupon = nroCupon
+                };
+
+                _context.Cupones_Clientes.Add(cupon_Cliente);
                 await _context.SaveChangesAsync();
+                return Ok(new
+                {
+                    Mensaje = "Se dio de alta el registro",
+                    NroCupon = nroCupon
+                });
             }
-            catch (DbUpdateException)
+            catch (Exception ex)
             {
-                return Conflict();
-            }
-            
-            return Ok($"Se le asignó el cupon {cupon_Cliente.NroCupon} al cliente {solicitudCuponesModel.CodCliente}");
-        }
-        
-
-
-        //Funcion para crear un NroCupon random
-        private string GenerarNroCupon()
-        {
-            Random random = new Random();
-            return $"{random.Next(100, 1000)}-{random.Next(100, 1000)}-{random.Next(100, 1000)}";
+                return BadRequest(ex.Message);
+            }           
         }
 
         [HttpPost("QuemadoCupon")]

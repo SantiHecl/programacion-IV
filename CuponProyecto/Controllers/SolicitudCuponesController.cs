@@ -32,15 +32,15 @@ namespace CuponProyecto.Controllers
         {
             try
             {
-                if (clienteDto.Cod_Cliente.IsNullOrEmpty())
-                    throw new Exception("El Dni del cliente no puede estar vacío");
+                if (string.IsNullOrEmpty(clienteDto.CodCliente))
+                    throw new Exception("El código del cliente no puede estar vacío");
 
                 string nroCupon = await _cuponesServices.GenerarNroCupon();
 
                 Cupon_ClienteModel cupon_Cliente = new Cupon_ClienteModel()
                 {
-                    id_Cupon = clienteDto.Id_Cupon,
-                    CodCliente = clienteDto.Cod_Cliente,
+                    id_Cupon = clienteDto.IdCupon,
+                    CodCliente = clienteDto.CodCliente,
                     FechaAsignado = DateTime.Now,
                     NroCupon = nroCupon
                 };
@@ -65,8 +65,7 @@ namespace CuponProyecto.Controllers
         {
             try
             {
-                Cupon_ClienteModel cuponCliente = await _context.Cupones_Clientes
-                .FirstOrDefaultAsync(c => c.NroCupon == nroCupon);
+                Cupon_ClienteModel cuponCliente = await _context.Cupones_Clientes.FirstOrDefaultAsync(c => c.NroCupon == nroCupon);
 
                 if (cuponCliente == null)
                 {

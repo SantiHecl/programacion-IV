@@ -22,8 +22,10 @@ builder.Services.AddScoped<ICuponesServices, CuponesServices>();
 builder.Services.AddScoped<ISendEmailService, SendEmailService>();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-
+builder.Services.AddSwaggerGen(options =>
+{
+    options.CustomSchemaIds(type => type.FullName); // Esto generará identificadores de esquema únicos basados en el nombre completo de cada tipo
+});
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -32,6 +34,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+
 
 app.UseHttpsRedirection();
 

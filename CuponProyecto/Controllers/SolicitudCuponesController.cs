@@ -27,8 +27,8 @@ namespace CuponProyecto.Controllers
         }
 
         // POST: api/Cupones
-        [HttpPost("SolicitudCupon")]
-        public async Task<IActionResult> SolicitudCupon(ClienteDto clienteDto)
+        [HttpPost("SolicitarCupon")]
+        public async Task<IActionResult> SolicitarCupon(ClienteDto clienteDto)
         {
             try
             {
@@ -61,39 +61,40 @@ namespace CuponProyecto.Controllers
         }
 
         [HttpPost("QuemadoCupon")]
-        public async Task<ActionResult<Cupones_HistorialModel>> PostQuemadoCupon(string nroCupon)
+        public async Task<IActionResult> QuemadoCupon(string nroCupon)
         {
-            Cupon_ClienteModel cuponCliente = await _context.Cupones_Clientes
-            .FirstOrDefaultAsync(c => c.NroCupon == nroCupon);
-
-            if (cuponCliente == null)
-            {
-                return NotFound("El cupón no existe o ya fue utilizado.");
-            }
-
-            Cupones_HistorialModel cupones_Historial = new Cupones_HistorialModel
-            {
-                CodCliente = cuponCliente.CodCliente,
-                id_Cupon = cuponCliente.id_Cupon,
-                NroCupon = cuponCliente.NroCupon,
-                FechaUso = DateTime.Now
-            };
-            _context.Cupones_Historial.Add(cupones_Historial);
-
-            _context.Cupones_Clientes.Remove(cuponCliente);
-            
-            
-
             try
             {
+                Cupon_ClienteModel cuponCliente = await _context.Cupones_Clientes
+                .FirstOrDefaultAsync(c => c.NroCupon == nroCupon);
+
+                if (cuponCliente == null)
+                {
+                    return NotFound("El cupón no existe o ya fue utilizado.");
+                }
+
+                Cupones_HistorialModel cupones_Historial = new Cupones_HistorialModel()
+                {
+                    CodCliente = cuponCliente.CodCliente,
+                    id_Cupon = cuponCliente.id_Cupon,
+                    NroCupon = cuponCliente.NroCupon,
+                    FechaUso = DateTime.Now
+                };
+
+                _context.Cupones_Historial.Add(cupones_Historial);
+                _context.Cupones_Clientes.Remove(cuponCliente);
                 await _context.SaveChangesAsync();
+
+                return Ok(new
+                {
+                    Mensaje = "Se ha quemado el cupon",
+                    NroCupon = nroCupon
+                });
             }
-            catch (DbUpdateException)
+            catch (Exception ex)
             {
-                return Conflict();
+                return BadRequest(ex.Message);
             }
-            
-            return Ok($"El cupon {nroCupon} fue utilizado correctamente");//CreatedAtAction("GetCupones_HistorialModel", new { id = Cupones_HistorialModel.NroCupon }, Cupones_HistorialModel);
         }
     }
 }

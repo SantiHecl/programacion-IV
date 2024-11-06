@@ -5,5 +5,6 @@ namespace ClientesApi.Interfaces
     public interface IClienteService
     {
         Task <string> SolicitarCupon(ClienteDto clienteDto);
+        Task<string> QuemadoCupon(ClienteDto clienteDto);
     }
 }

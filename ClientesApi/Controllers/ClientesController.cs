@@ -102,20 +102,6 @@ namespace ClientesApi.Controllers
             return CreatedAtAction("AltaNuevoCliente", new { id = clientesModel.CodCliente }, clientesModel);
         }
 
-        [HttpPost("EnviarSolicitudACupones")]
-        public async Task<IActionResult> EnviarSolicitudACupones([FromBody] ClienteDto clienteDto)
-        {
-            try
-            {
-                var respuesta = await _clienteService.SolicitarCupon(clienteDto);
-                return Ok(respuesta);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest($"Error: {ex.Message}");
-            }
-        }
-
         // DELETE: api/Clientes/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> EliminarCliente(string id)

@@ -27,8 +27,8 @@ namespace CuponProyecto.Controllers
         }
 
         // POST: api/Cupones
-        [HttpPost]
-        public async Task<ActionResult<CuponModel>> SolicitudCupon(ClienteDto clienteDto)
+        [HttpPost("SolicitudCupon")]
+        public async Task<IActionResult> SolicitudCupon(ClienteDto clienteDto)
         {
             try
             {

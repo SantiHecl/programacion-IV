@@ -22,7 +22,7 @@ namespace ClientesApi.Services
                 var jsonCliente = JsonConvert.SerializeObject(clienteDto);
                 var contenido = new StringContent(jsonCliente, Encoding.UTF8, "application/json");
                 var cliente = new HttpClient();
-                var respuesta = await cliente.PostAsync("https://localhost:7040/api/SolicitudCupones/SolicitudCupon", contenido);
+                var respuesta = await cliente.PostAsync("https://localhost:7040/api/SolicitudCupones/SolicitarCupon", contenido);
 
                 if (respuesta.IsSuccessStatusCode)
                 {

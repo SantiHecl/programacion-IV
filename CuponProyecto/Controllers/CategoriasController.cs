@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using CuponProyecto.Data;
 using CuponProyecto.Models;
+using Serilog;
 
 namespace CuponProyecto.Controllers
 {
@@ -25,6 +26,7 @@ namespace CuponProyecto.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<CategoriaModel>>> GetCategorias()
         {
+            Log.Information($"Se llamo a GetCategoria");
             return await _context
                 .Categorias
                 .Include(c => c.Cupones_Categorias)
@@ -40,9 +42,10 @@ namespace CuponProyecto.Controllers
 
             if (categoriaModel == null)
             {
+                Log.Error($"no existe id {id} en GetCategoriaId");
                 return NotFound();
             }
-
+            Log.Information($"Se llamo a GetCategoriaId");
             return categoriaModel;
         }
 
@@ -53,6 +56,7 @@ namespace CuponProyecto.Controllers
         {
             if (id != categoriaModel.Id_Categoria)
             {
+                Log.Warning($"ID en la ruta ({id}) no coincide con el ID de la categoria ({categoriaModel.Id_Categoria})");
                 return BadRequest();
             }
 
@@ -61,15 +65,18 @@ namespace CuponProyecto.Controllers
             try
             {
                 await _context.SaveChangesAsync();
+                Log.Information($"Se creo Categoria");
             }
             catch (DbUpdateConcurrencyException)
             {
                 if (!CategoriaModelExists(id))
                 {
+                    Log.Error($"No existe la categoria con esa id para actualizar, {id}");
                     return NotFound();
                 }
                 else
                 {
+                    Log.Error($"Error al actualizar la categoria con ID {id}");
                     throw;
                 }
             }
@@ -85,6 +92,7 @@ namespace CuponProyecto.Controllers
             _context.Categorias.Add(categoriaModel);
             await _context.SaveChangesAsync();
 
+            Log.Information($"Categoria creada exitosamente.");
             return CreatedAtAction("GetCategoriaModel", new { id = categoriaModel.Id_Categoria }, categoriaModel);
         }
 
@@ -95,12 +103,14 @@ namespace CuponProyecto.Controllers
             var categoriaModel = await _context.Categorias.FindAsync(id);
             if (categoriaModel == null)
             {
+                Log.Error($"Artículo con ID {id} no existe para borrar.");
                 return NotFound();
             }
 
             _context.Categorias.Remove(categoriaModel);
             await _context.SaveChangesAsync();
 
+            Log.Information($"Se elimino Categoria");
             return NoContent();
         }
 

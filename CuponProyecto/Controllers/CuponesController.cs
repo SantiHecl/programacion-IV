@@ -33,6 +33,19 @@ namespace CuponProyecto.Controllers
                 .ToListAsync();
         }
 
+        [HttpGet("{codCliente}")]
+        public async Task<ActionResult<Cupon_ClienteModel>> GetCuponPorCodCliente(int codCliente)
+        {
+            var cuponModel = await _context.Cupones_Clientes.FindAsync(codCliente);
+
+            if (cuponModel == null)
+            {
+                return NotFound();
+            }
+
+            return cuponModel;
+        }  
+
         // GET: api/Cupones/5
         [HttpGet("{id}")]
         public async Task<ActionResult<CuponModel>> GetCuponModel(int id)
@@ -99,7 +112,8 @@ namespace CuponProyecto.Controllers
                 return NotFound();
             }
 
-            _context.Cupones.Remove(cuponModel);
+            //_context.Cupones.Remove(cuponModel);
+            cuponModel.Activo = false;
             await _context.SaveChangesAsync();
 
             return NoContent();

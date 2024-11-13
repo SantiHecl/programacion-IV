@@ -1,4 +1,5 @@
-﻿using ClientesApi.Interfaces;
+﻿using ClientesApi.Data;
+using ClientesApi.Interfaces;
 using ClientesApi.Models.DTO;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -9,15 +10,17 @@ namespace ClientesApi.Controllers
     [ApiController]
     public class Cliente_CuponController : ControllerBase
     {
+        private readonly DataBaseContext _context;
         private readonly IClienteService _clienteService;
 
-        public Cliente_CuponController(IClienteService clienteService)
+        public Cliente_CuponController(DataBaseContext context, IClienteService clienteService)
         {
+            _context = context;
             _clienteService = clienteService;
-        } 
+        }
 
         [HttpPost("EnviarSolicitudACupones")]
-        public async Task<IActionResult> EnviarSolicitudACupones([FromBody] ClienteDto clienteDto)
+        public async Task<IActionResult> ReclamarCupon([FromBody] ClienteDto clienteDto)
         {
             try
             {
@@ -39,6 +42,20 @@ namespace ClientesApi.Controllers
                 return Ok(respuesta);
             }
             catch (Exception ex)
+            {
+                return BadRequest($"Error: {ex.Message}");
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ObtenerCuponesActivos(string codCliente)
+        {
+            try
+            {
+                var respuesta = await _context.Clientes.FindAsync(codCliente);
+                return Ok(respuesta);
+
+            }catch (Exception ex)
             {
                 return BadRequest($"Error: {ex.Message}");
             }

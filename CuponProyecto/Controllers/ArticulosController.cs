@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using CuponProyecto.Data;
 using CuponProyecto.Models;
+using Serilog;
 
 namespace CuponProyecto.Controllers
 {
@@ -25,6 +26,7 @@ namespace CuponProyecto.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ArticuloModel>>> GetArticulos()
         {
+            Log.Information($"Se llamo a GetArticulo");
             return await _context.Articulos.Include(a => a.Precio).ToListAsync();
         }
 
@@ -36,9 +38,10 @@ namespace CuponProyecto.Controllers
 
             if (articuloModel == null)
             {
+                Log.Error($"GetArticuloId No existe el articulo con esa id, {id}");
                 return NotFound();
             }
-
+            Log.Information($"Se llamo a GetArticuloId");
             return articuloModel;
         }
 
@@ -49,6 +52,7 @@ namespace CuponProyecto.Controllers
         {
             if (id != articuloModel.Id_Articulo)
             {
+                Log.Warning($"ID en la ruta ({id}) no coincide con el ID del artículo ({articuloModel.Id_Articulo})");
                 return BadRequest();
             }
 
@@ -57,15 +61,18 @@ namespace CuponProyecto.Controllers
             try
             {
                 await _context.SaveChangesAsync();
+                Log.Information($"Artículo con ID {id} actualizado exitosamente.");
             }
             catch (DbUpdateConcurrencyException)
             {
                 if (!ArticuloModelExists(id))
                 {
+                    Log.Error($"No existe el articulo con esa id para actualizar, {id}");
                     return NotFound();
                 }
                 else
                 {
+                    Log.Error($"Error al actualizar el artículo con ID {id}");
                     throw;
                 }
             }
@@ -81,6 +88,7 @@ namespace CuponProyecto.Controllers
             _context.Articulos.Add(articuloModel);
             await _context.SaveChangesAsync();
 
+            Log.Information($"Artículo creado exitosamente.");
             return CreatedAtAction("GetArticuloModel", new { id = articuloModel.Id_Articulo }, articuloModel);
         }
 
@@ -91,12 +99,14 @@ namespace CuponProyecto.Controllers
             var articuloModel = await _context.Articulos.FindAsync(id);
             if (articuloModel == null)
             {
+                Log.Error($"Artículo con ID {id} no existe para borrar.");
                 return NotFound();
             }
 
             _context.Articulos.Remove(articuloModel);
             await _context.SaveChangesAsync();
 
+            Log.Information($"Artículo con ID {id} borrado exitosamente.");
             return NoContent();
         }
 

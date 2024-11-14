@@ -39,6 +39,11 @@ namespace CuponProyecto.Data
                 modelBuilder.Entity<Cupones_HistorialModel>()
                .HasKey(c => new {c.id_Cupon, c.NroCupon });
 
+            modelBuilder.Entity<ArticuloModel>()
+            .HasOne(a => a.Precio)
+            .WithOne(p => p.Articulo) 
+            .HasForeignKey<PrecioModel>(p => p.Id_Articulo);
+
             base.OnModelCreating(modelBuilder);
         }
         public DbSet<CuponProyecto.Models.Cupon_CategoriaModel> Cupon_CategoriaModel { get; set; } = default!;

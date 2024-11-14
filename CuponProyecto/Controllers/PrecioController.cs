@@ -61,7 +61,7 @@ namespace CuponProyecto.Controllers
             if (precio == null)
                 return NotFound("AArtículo no encontrado.");
 
-            articulo.Precio = nuevoPrecio;
+            precio.Precio = nuevoPrecio;
             await _context.SaveChangesAsync();
 
             return Ok(new { Message = "Precio modificado", Precio = nuevoPrecio });

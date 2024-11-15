@@ -31,14 +31,14 @@ namespace CuponProyecto.Controllers
         }
 
         // GET: api/Cupones_Detalles/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<IEnumerable<Cupones_DetallesModel>>> GetCupones_DetallesModel(int id)
+        [HttpGet("{idCupon}/{idArticulo}")]
+        public async Task<ActionResult<IEnumerable<Cupones_DetallesModel>>> GetCupones_DetallesModel(int idCupon, int idArticulo)
         {
-            var cupones_DetallesModel = await _context.Cupones_Detalle.Where(cd=> cd.id_Cupon == id).ToListAsync();
+            var cupones_DetallesModel = await _context.Cupones_Detalle.Where(cd=> cd.id_Cupon == idCupon && cd.id_Articulo==idArticulo).ToListAsync();
 
             if (cupones_DetallesModel == null)
             {
-                Log.Error($"GetCupones_DetallesId No existe el cupon con esa id, {id}");
+                Log.Error($"GetCupones_DetallesId No existe el cupon con esa id, {idCupon} / {idArticulo}");
                 return NotFound();
             }
             Log.Information($"Se llamo a GetCupones_DetallesId");
@@ -47,12 +47,12 @@ namespace CuponProyecto.Controllers
 
         // PUT: api/Cupones_Detalles/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutCupones_DetallesModel(int id, Cupones_DetallesModel cupones_DetallesModel)
+        [HttpPut("{idCupon}/{idArticulo}")]
+        public async Task<IActionResult> PutCupones_DetallesModel(int idCupon, int idArticulo, Cupones_DetallesModel cupones_DetallesModel)
         {
-            if (id != cupones_DetallesModel.id_Cupon)
+            if (idCupon != cupones_DetallesModel.id_Cupon)
             {
-                Log.Warning($"ID en la ruta ({id}) no coincide con el ID del cupon ({cupones_DetallesModel.id_Cupon})");
+                Log.Warning($"ID en la ruta ({idCupon} /{idArticulo}) no coincide con el ID del cupon ({cupones_DetallesModel.id_Cupon})");
                 return BadRequest();
             }
 
@@ -61,18 +61,18 @@ namespace CuponProyecto.Controllers
             try
             {
                 await _context.SaveChangesAsync();
-                Log.Information($"Cupones_Detalles con ID {id} actualizado exitosamente.");
+                Log.Information($"Cupones_Detalles con ID {idCupon}/ {idArticulo} actualizado exitosamente.");
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!Cupones_DetallesModelExists(id))
+                if (!Cupones_DetallesModelExists(idCupon))
                 {
-                    Log.Error($"No existe el Cupones_Detalles con esa id para actualizar, {id}");
+                    Log.Error($"No existe el Cupones_Detalles con esa id para actualizar, {idCupon}/{idArticulo}");
                     return NotFound();
                 }
                 else
                 {
-                    Log.Error($"Error al actualizar el Cupones_Detalles con ID {id}");
+                    Log.Error($"Error al actualizar el Cupones_Detalles con ID {idCupon}/{idArticulo}");
                     throw;
                 }
             }

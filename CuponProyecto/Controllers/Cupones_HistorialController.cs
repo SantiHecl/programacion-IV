@@ -31,14 +31,14 @@ namespace CuponProyecto.Controllers
         }
 
         // GET: api/Cupones_Historial/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Cupones_HistorialModel>> GetCupones_HistorialModel(int id)
+        [HttpGet("{idCupon}/{nroCupon}")]
+        public async Task<ActionResult<Cupones_HistorialModel>> GetCupones_HistorialModel(int idCupon, string nroCupon)
         {
-            var cupones_HistorialModel = await _context.Cupones_Historial.FindAsync(id);
+            var cupones_HistorialModel = await _context.Cupones_Historial.FindAsync(idCupon, nroCupon);
 
             if (cupones_HistorialModel == null)
             {
-                Log.Error($"GetCuponesId No existe el artiuclo con esa id, {id}");
+                Log.Error($"GetCuponesId No existe el artiuclo con esa id, {idCupon}, {nroCupon}");
                 return NotFound();
             }
             Log.Information($"Se llamo a GetCuponesId");
@@ -47,12 +47,12 @@ namespace CuponProyecto.Controllers
 
         // PUT: api/Cupones_Historial/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutCupones_HistorialModel(int id, Cupones_HistorialModel cupones_HistorialModel)
+        [HttpPut("{idCupon}/{nroCupon}")]
+        public async Task<IActionResult> PutCupones_HistorialModel(int idCupon, string nroCupon, Cupones_HistorialModel cupones_HistorialModel)
         {
-            if (id != cupones_HistorialModel.id_Cupon)
+            if (idCupon != cupones_HistorialModel.id_Cupon && nroCupon!=cupones_HistorialModel.NroCupon)
             {
-                Log.Warning($"ID en la ruta ({id} no coincide con el ID del cupón ({cupones_HistorialModel.id_Cupon})");
+                Log.Warning($"ID en la ruta ({idCupon} no coincide con el ID del cupón ({cupones_HistorialModel.id_Cupon})");
                 return BadRequest();
             }
 
@@ -61,18 +61,18 @@ namespace CuponProyecto.Controllers
             try
             {
                 await _context.SaveChangesAsync();
-                Log.Information($"Cupon con ID {id} actualizado exitosamente.");
+                Log.Information($"Cupon con ID {idCupon} actualizado exitosamente.");
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!Cupones_HistorialModelExists(id))
+                if (!Cupones_HistorialModelExists(idCupon))
                 {
-                    Log.Error($"No existe el cupón con esa id para actualizar, {id}");
+                    Log.Error($"No existe el cupón con esa id para actualizar, {idCupon}");
                     return NotFound();
                 }
                 else
                 {
-                    Log.Error($"Error al actualizar el cupón con ID {id}");
+                    Log.Error($"Error al actualizar el cupón con ID {idCupon}");
                     throw;
                 }
             }
@@ -106,25 +106,24 @@ namespace CuponProyecto.Controllers
                     throw;
                 }
             }
-
-            return CreatedAtAction("GetCupones_HistorialModel", new { id = cupones_HistorialModel.id_Cupon }, cupones_HistorialModel);
+            return CreatedAtAction("GetCupones_HistorialModel",new { idCupon = cupones_HistorialModel.id_Cupon, nroCupon = cupones_HistorialModel.NroCupon },cupones_HistorialModel);
         }
 
         // DELETE: api/Cupones_Historial/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteCupones_HistorialModel(int id)
+        [HttpDelete("{idCupon}/{nroCupon}")]
+        public async Task<IActionResult> DeleteCupones_HistorialModel(int idCupon, string nroCupon)
         {
-            var cupones_HistorialModel = await _context.Cupones_Historial.FindAsync(id);
+            var cupones_HistorialModel = await _context.Cupones_Historial.FindAsync(idCupon, nroCupon);
             if (cupones_HistorialModel == null)
             {
-                Log.Error($"Cupón con ID {id} no existe para borrar.");
+                Log.Error($"Cupón con ID {idCupon} no existe para borrar.");
                 return NotFound();
             }
 
             _context.Cupones_Historial.Remove(cupones_HistorialModel);
             await _context.SaveChangesAsync();
 
-            Log.Error($"Cupón con ID {id} borrado exitosamente.");
+            Log.Error($"Cupón con ID {idCupon} borrado exitosamente.");
             return NoContent();
         }
 

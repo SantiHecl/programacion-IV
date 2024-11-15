@@ -5,7 +5,7 @@ namespace CuponProyecto.Data
 {
     public class DataBaseContext : DbContext
     {
-        public DataBaseContext (DbContextOptions <DataBaseContext> options) : base (options) { }
+        public DataBaseContext (DbContextOptions <DataBaseContext> options) : base(options) { }
 
         public DbSet <CuponModel> Cupones { get; set; }
         public DbSet<CategoriaModel> Categorias { get; set; }

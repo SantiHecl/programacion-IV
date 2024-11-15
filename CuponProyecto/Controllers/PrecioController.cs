@@ -1,8 +1,8 @@
 ﻿using CuponProyecto.Data;
 using CuponProyecto.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Serilog;
-using System.Data.Entity;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -21,80 +21,83 @@ namespace CuponProyecto.Controllers
 
         // GET: api/<PrecioController>
         [HttpGet]
-        public async Task<IActionResult> GetPrecios()
+        public async Task<ActionResult<IEnumerable<PrecioModel>>> GetPrecios()
         {
-            var articulos = await _context.Articulos
-                .Include(c => c.Precio)
-                .Select(c => new
-                {
-                    c.Id_Articulo,
-                    c.Nombre_Articulo,
-                    c.Descripcion_Articulo,
-                    c.Activo,
-                    Precio = c.Precio != null ? c.Precio.Precio : 0
-                })
-                .ToListAsync();
-
             Log.Information($"Se llamo a GetPrecios");
-            return Ok(articulos);
+            return await _context.Precios.Include(a => a.Articulo).ToListAsync();
         }
 
         // POST api/<PrecioController>
         [HttpPost]
-        public async Task<ActionResult> PostPrecio(int idArticulo, [FromBody] decimal precio)
+        public async Task<ActionResult<PrecioModel>> PostPrecio(PrecioModel precioModel)
         {
-            var articulo = _context.Articulos.FindAsync(idArticulo);
-
-            if (articulo == null) { 
-            Log.Error($"Artículo con ID {idArticulo} no encontrado.");
-            return NotFound("Artículo no encontrado.");
-        }
-        PrecioModel precioModel = new PrecioModel { Precio = precio, Id_Articulo = idArticulo };
+      
             _context.Precios.Add(precioModel);
             await _context.SaveChangesAsync();
 
-            Log.Information($"Se le asigno el precio {precio} para el artículo con id {idArticulo} exitosamente.");
-            return Ok(new { Message = "Precio creado y asignado al artículo", Precio = precio });
+            Log.Information($"Se le asigno el precio {precioModel.Precio} para el artículo con id {precioModel.Id_Articulo} exitosamente.");
+            return Ok(new { Message = "Precio creado y asignado al artículo", PrecioA = precioModel.Precio });
         }
 
         // PUT api/<PrecioController>/5
-        [HttpPut("{id}")]
-        public async Task<ActionResult> PutPrecio(int idArticulo, [FromBody] decimal nuevoPrecio)
+        [HttpPut("{idPrecio}")]
+        public async Task<ActionResult> PutPrecio(int idPrecio, PrecioModel precioModel)
         {
-            var precio = await _context.Precios.FindAsync(idArticulo);
-            if (precio == null)
+            if (idPrecio != precioModel.Id_Articulo)
             {
-                Log.Error($"ID en la ruta ({idArticulo}) no coincide con el ID del artículo");
-                return NotFound("Artículo no encontrado.");
+                Log.Warning($"ID en la ruta ({idPrecio}) no coincide con el ID del artículo ({precioModel.Id_Articulo})");
+                return BadRequest();
             }
-            precio.Precio = nuevoPrecio;
-            await _context.SaveChangesAsync();
 
-            Log.Information($"Se le actualizo el precio del artículo con ID {idArticulo} a un precio de {nuevoPrecio} exitosamente. ");
-            return Ok(new { Message = "Precio modificado", Precio = nuevoPrecio });
+            _context.Entry(precioModel).State = EntityState.Modified;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+                Log.Information($"Se le actualizo el precio del artículo con ID {precioModel.Id_Articulo} a un precio de {precioModel.Precio} exitosamente. ");
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!PrecioModelExists(idPrecio))
+                {
+                    Log.Error($"No existe el precio con esa id para actualizar, {idPrecio}");
+                    return NotFound();
+                }
+                else
+                {
+                    Log.Error($"Error al actualizar el precio con ID {idPrecio}");
+                    throw;
+                }
+            }
+
+            return Ok(new { Message = "Precio modificado", Precio = precioModel.Precio });
         }
 
         // DELETE api/<PrecioController>/5
-        [HttpDelete("{id}")]
-        public async Task<ActionResult> DeletePrecio(int idArticulo)
+        [HttpDelete("{idPrecio}")]
+        public async Task<IActionResult> DeletePrecio(int idPrecio)
         {
-            var precio = await _context.Precios.FindAsync(idArticulo);
+            var precio = await _context.Precios.FindAsync(idPrecio);
 
             if (precio == null)
             {
-                Log.Error($"El artículo con el ID {idArticulo} no existe para borrar el precio.");
+                Log.Error($"El artículo con el ID {idPrecio} no existe para borrar el precio.");
                 return NotFound("Artículo no encontrado.");
             }
-            precio.Precio = 0;
-
+            
             var articulo = await _context.Articulos.FindAsync(precio.Id_Articulo);
-            articulo.Precio = precio;
+            articulo.Precio.Precio = 0;
 
             _context.Precios.Remove(precio);
             await _context.SaveChangesAsync();
 
-            Log.Information($"Se elimino exitosamente el precio del artículo con el ID {idArticulo}.El artículo ahora tiene precio 0.");
+            Log.Information($"Se elimino exitosamente el precio del artículo con el ID {idPrecio}.El artículo ahora tiene precio 0.");
             return Ok(new { Message = "Precio eliminado. El artículo ahora tiene precio 0." });
+        }
+
+        private bool PrecioModelExists(int id)
+        {
+            return _context.Precios.Any(e => e.Id_Precio == id);
         }
     }
 }

@@ -27,14 +27,14 @@ namespace CuponProyecto.Controllers
         public async Task<ActionResult<IEnumerable<Cupon_CategoriaModel>>> GetCupon_CategoriaModel()
         {
             Log.Information($"Se llamo a GetCuponCategoria");
-            return await _context.Cupon_CategoriaModel.ToListAsync();
+            return await _context.Cupones_Categorias.ToListAsync();
         }
 
         // GET: api/Cupon_Categoria/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Cupon_CategoriaModel>> GetCupon_CategoriaModel(int id)
         {
-            var cupon_CategoriaModel = await _context.Cupon_CategoriaModel.FindAsync(id);
+            var cupon_CategoriaModel = await _context.Cupones_Categorias.FindAsync(id);
 
             if (cupon_CategoriaModel == null)
             {
@@ -85,7 +85,7 @@ namespace CuponProyecto.Controllers
         [HttpPost]
         public async Task<ActionResult<Cupon_CategoriaModel>> PostCupon_CategoriaModel(Cupon_CategoriaModel cupon_CategoriaModel)
         {
-            _context.Cupon_CategoriaModel.Add(cupon_CategoriaModel);
+            _context.Cupones_Categorias.Add(cupon_CategoriaModel);
             await _context.SaveChangesAsync();
 
             Log.Information($"Cupon_Categoria creado exitosamente.");
@@ -96,14 +96,14 @@ namespace CuponProyecto.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCupon_CategoriaModel(int id)
         {
-            var cupon_CategoriaModel = await _context.Cupon_CategoriaModel.FindAsync(id);
+            var cupon_CategoriaModel = await _context.Cupones_Categorias.FindAsync(id);
             if (cupon_CategoriaModel == null)
             {
                 Log.Error($"Cupon_Categoria con ID {id} no existe para borrar.");
                 return NotFound();
             }
 
-            _context.Cupon_CategoriaModel.Remove(cupon_CategoriaModel);
+            _context.Cupones_Categorias.Remove(cupon_CategoriaModel);
             await _context.SaveChangesAsync();
 
             Log.Information($"Cupon_Categoria con ID {id} borrado exitosamente.");
@@ -112,7 +112,7 @@ namespace CuponProyecto.Controllers
 
         private bool Cupon_CategoriaModelExists(int id)
         {
-            return _context.Cupon_CategoriaModel.Any(e => e.Id_Cupones_Categorias == id);
+            return _context.Cupones_Categorias.Any(e => e.Id_Cupones_Categorias == id);
         }
     }
 }

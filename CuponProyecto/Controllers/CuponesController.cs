@@ -35,7 +35,7 @@ namespace CuponProyecto.Controllers
                 .ToListAsync();
         }
 
-        [HttpGet("{codCliente}")]
+        [HttpGet("codCliente")]
         public async Task<ActionResult<Cupon_ClienteModel>> GetCuponPorCodCliente(int codCliente)
         {
             var cuponModel = await _context.Cupones_Clientes.FindAsync(codCliente);

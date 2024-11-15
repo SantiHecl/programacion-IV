@@ -33,10 +33,10 @@ namespace ClientesApi.Controllers
         }
 
         // GET: api/Clientes/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<ClientesModel>> GetClienteById(string id)
+        [HttpGet("{codCliente}")]
+        public async Task<ActionResult<ClientesModel>> GetClienteByCodCliente(string codCliente)
         {
-            var clientesModel = await _context.Clientes.FindAsync(id);
+            var clientesModel = await _context.Clientes.FindAsync(codCliente);
 
             if (clientesModel == null)
             {
@@ -48,10 +48,10 @@ namespace ClientesApi.Controllers
 
         // PUT: api/Clientes/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> ModificarCliente(string id, ClientesModel clientesModel)
+        [HttpPut("{codCliente}")]
+        public async Task<IActionResult> ModificarCliente(string codCliente, ClientesModel clientesModel)
         {
-            if (id != clientesModel.CodCliente)
+            if (codCliente != clientesModel.CodCliente)
             {
                 return BadRequest();
             }
@@ -64,7 +64,7 @@ namespace ClientesApi.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!ClienteExiste(id))
+                if (!ClienteExiste(codCliente))
                 {
                     return NotFound();
                 }
@@ -99,14 +99,14 @@ namespace ClientesApi.Controllers
                 }
             }
 
-            return CreatedAtAction("AltaNuevoCliente", new { id = clientesModel.CodCliente }, clientesModel);
+            return CreatedAtAction("AltaNuevoCliente", new { codCliente = clientesModel.CodCliente }, clientesModel);
         }
 
         // DELETE: api/Clientes/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> EliminarCliente(string id)
+        [HttpDelete("{codCliente}")]
+        public async Task<IActionResult> EliminarCliente(string codCliente)
         {
-            var clientesModel = await _context.Clientes.FindAsync(id);
+            var clientesModel = await _context.Clientes.FindAsync(codCliente);
             if (clientesModel == null)
             {
                 return NotFound();
@@ -118,9 +118,9 @@ namespace ClientesApi.Controllers
             return NoContent();
         }
 
-        private bool ClienteExiste(string id)
+        private bool ClienteExiste(string codCliente)
         {
-            return _context.Clientes.Any(e => e.CodCliente == id);
+            return _context.Clientes.Any(e => e.CodCliente == codCliente);
         }
     }
 }

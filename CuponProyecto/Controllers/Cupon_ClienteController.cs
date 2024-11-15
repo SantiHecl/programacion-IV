@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using CuponProyecto.Data;
 using CuponProyecto.Models;
 using Serilog;
+using CuponProyecto.Interfaces;
 
 namespace CuponProyecto.Controllers
 {
@@ -16,10 +17,12 @@ namespace CuponProyecto.Controllers
     public class Cupon_ClienteController : ControllerBase
     {
         private readonly DataBaseContext _context;
+        private readonly ICuponesServices _cuponesServices;
 
-        public Cupon_ClienteController(DataBaseContext context)
+        public Cupon_ClienteController(DataBaseContext context, ICuponesServices cuponesServices)
         {
             _context = context;
+            _cuponesServices = cuponesServices;
         }
 
         // GET: api/Cupon_Cliente
@@ -85,6 +88,7 @@ namespace CuponProyecto.Controllers
         [HttpPost]
         public async Task<ActionResult<Cupon_ClienteModel>> PostCupon_ClienteModel(Cupon_ClienteModel cupon_ClienteModel)
         {
+            cupon_ClienteModel.NroCupon = await _cuponesServices.GenerarNroCupon();
             cupon_ClienteModel.FechaAsignado = DateTime.Now;
 
             _context.Cupones_Clientes.Add(cupon_ClienteModel);

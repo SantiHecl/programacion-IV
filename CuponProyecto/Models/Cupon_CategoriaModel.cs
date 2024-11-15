@@ -6,7 +6,6 @@ namespace CuponProyecto.Models
     public class Cupon_CategoriaModel
     {
         [Key]
-
         public int Id_Cupones_Categorias { get; set; }
         public int Id_Cupon { get; set; }
         public int Id_Categoria { get; set; }

@@ -46,7 +46,5 @@ namespace CuponProyecto.Data
 
             base.OnModelCreating(modelBuilder);
         }
-        public DbSet<CuponProyecto.Models.Cupon_CategoriaModel> Cupon_CategoriaModel { get; set; } = default!;
-
     }
 }

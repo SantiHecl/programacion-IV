@@ -9,7 +9,7 @@ namespace CuponProyecto.Data
 
         public DbSet <CuponModel> Cupones { get; set; }
         public DbSet<CategoriaModel> Categorias { get; set; }
-        public DbSet<CuponModel> Cupones_Categorias { get; set; }
+        public DbSet<Cupon_CategoriaModel> Cupones_Categorias { get; set; }
         public DbSet<Tipo_CuponModel> Tipo_Cupon { get; set; }
         public DbSet<Cupon_ClienteModel> Cupones_Clientes { get; set; }
         public DbSet<Cupones_DetallesModel> Cupones_Detalle { get; set; }

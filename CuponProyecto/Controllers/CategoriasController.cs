@@ -27,11 +27,12 @@ namespace CuponProyecto.Controllers
         public async Task<ActionResult<IEnumerable<CategoriaModel>>> GetCategorias()
         {
             Log.Information($"Se llamo a GetCategoria");
-            return await _context
+            /*return await _context
                 .Categorias
                 .Include(c => c.Cupones_Categorias)
                 .ThenInclude (cc => cc.Cupon)
-                .ToListAsync();
+                .ToListAsync();*/
+            return await _context.Categorias.Include(a => a.Cupones_Categorias).ToListAsync();
         }
 
         // GET: api/Categorias/5

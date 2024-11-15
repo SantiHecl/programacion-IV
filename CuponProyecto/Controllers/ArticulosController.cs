@@ -99,14 +99,14 @@ namespace CuponProyecto.Controllers
             var articuloModel = await _context.Articulos.FindAsync(id);
             if (articuloModel == null)
             {
-                Log.Error($"Artículo con ID {id} no existe para borrar.");
+                Log.Error($"Artículo con ID {id} no existe para dar de baja.");
                 return NotFound();
             }
 
-            _context.Articulos.Remove(articuloModel);
+            articuloModel.Activo = false;
             await _context.SaveChangesAsync();
 
-            Log.Information($"Artículo con ID {id} borrado exitosamente.");
+            Log.Information($"Artículo con ID {id} se ha dado de baja exitosamente.");
             return NoContent();
         }
 

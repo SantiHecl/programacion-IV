@@ -93,20 +93,20 @@ namespace CuponProyecto.Controllers
         }
 
         // DELETE: api/Cupones_Detalles/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteCupones_DetallesModel(int id)
+        [HttpDelete("{idCupon}/{idArticulo}")]
+        public async Task<IActionResult> DeleteCupones_DetallesModel(int idCupon, int idArticulo)
         {
-            var cupones_DetallesModel = await _context.Cupones_Detalle.FindAsync(id);
+            var cupones_DetallesModel = await _context.Cupones_Detalle.FindAsync(idCupon, idArticulo);
             if (cupones_DetallesModel == null)
             {
-                Log.Error($"Cupones_Detalles con ID {id} no existe para borrar.");
+                Log.Error($"Cupones_Detalles con ID {idCupon}, {idArticulo} no existe para borrar.");
                 return NotFound();
             }
 
             _context.Cupones_Detalle.Remove(cupones_DetallesModel);
             await _context.SaveChangesAsync();
 
-            Log.Information($"Cupones_Detalles con ID {id} borrado exitosamente.");
+            Log.Information($"Cupones_Detalles con ID {idCupon}, {idArticulo} borrado exitosamente.");
             return NoContent();
         }
 

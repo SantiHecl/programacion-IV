@@ -1,6 +1,7 @@
 ﻿using CuponProyecto.Data;
 using CuponProyecto.Models;
 using Microsoft.AspNetCore.Mvc;
+using Serilog;
 using System.Data.Entity;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -34,6 +35,7 @@ namespace CuponProyecto.Controllers
                 })
                 .ToListAsync();
 
+            Log.Information($"Se llamo a GetPrecios");
             return Ok(articulos);
         }
 
@@ -43,13 +45,15 @@ namespace CuponProyecto.Controllers
         {
             var articulo = _context.Articulos.FindAsync(idArticulo);
 
-            if (articulo == null)
-                return NotFound("Artículo no encontrado.");
-
-            PrecioModel precioModel = new PrecioModel { Precio = precio, Id_Articulo = idArticulo };
+            if (articulo == null) { 
+            Log.Error($"Artículo con ID {idArticulo} no encontrado.");
+            return NotFound("Artículo no encontrado.");
+        }
+        PrecioModel precioModel = new PrecioModel { Precio = precio, Id_Articulo = idArticulo };
             _context.Precios.Add(precioModel);
             await _context.SaveChangesAsync();
 
+            Log.Information($"Se le asigno el precio {precio} para el artículo con id {idArticulo} exitosamente.");
             return Ok(new { Message = "Precio creado y asignado al artículo", Precio = precio });
         }
 
@@ -59,11 +63,14 @@ namespace CuponProyecto.Controllers
         {
             var precio = await _context.Precios.FindAsync(idArticulo);
             if (precio == null)
-                return NotFound("AArtículo no encontrado.");
-
+            {
+                Log.Error($"ID en la ruta ({idArticulo}) no coincide con el ID del artículo");
+                return NotFound("Artículo no encontrado.");
+            }
             precio.Precio = nuevoPrecio;
             await _context.SaveChangesAsync();
 
+            Log.Information($"Se le actualizo el precio del artículo con ID {idArticulo} a un precio de {nuevoPrecio} exitosamente. ");
             return Ok(new { Message = "Precio modificado", Precio = nuevoPrecio });
         }
 
@@ -74,8 +81,10 @@ namespace CuponProyecto.Controllers
             var precio = await _context.Precios.FindAsync(idArticulo);
 
             if (precio == null)
+            {
+                Log.Error($"El artículo con el ID {idArticulo} no existe para borrar el precio.");
                 return NotFound("Artículo no encontrado.");
-
+            }
             precio.Precio = 0;
 
             var articulo = await _context.Articulos.FindAsync(precio.Id_Articulo);
@@ -84,6 +93,7 @@ namespace CuponProyecto.Controllers
             _context.Precios.Remove(precio);
             await _context.SaveChangesAsync();
 
+            Log.Information($"Se elimino exitosamente el precio del artículo con el ID {idArticulo}.El artículo ahora tiene precio 0.");
             return Ok(new { Message = "Precio eliminado. El artículo ahora tiene precio 0." });
         }
     }

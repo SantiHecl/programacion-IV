@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using CuponProyecto.Data;
 using CuponProyecto.Models;
+using Serilog;
 
 namespace CuponProyecto.Controllers
 {
@@ -25,6 +26,7 @@ namespace CuponProyecto.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Tipo_CuponModel>>> GetTipo_Cupon()
         {
+            Log.Information($"Se llamo a GetTipo_Cupon");
             return await _context.Tipo_Cupon.ToListAsync();
         }
 
@@ -36,9 +38,10 @@ namespace CuponProyecto.Controllers
 
             if (tipo_CuponModel == null)
             {
+                Log.Error($"GetTipo_CuponId No existe el tipo de cupón con esa id, {id}");
                 return NotFound();
             }
-
+            Log.Information($"Se llamo a GetTipo_CuponesId");
             return tipo_CuponModel;
         }
 
@@ -49,6 +52,7 @@ namespace CuponProyecto.Controllers
         {
             if (id != tipo_CuponModel.Id_Tipo_Cupon)
             {
+                Log.Warning($"ID en la ruta ({id}) no coincide con el ID del tipo de cupón ({tipo_CuponModel.Id_Tipo_Cupon})");
                 return BadRequest();
             }
 
@@ -57,15 +61,18 @@ namespace CuponProyecto.Controllers
             try
             {
                 await _context.SaveChangesAsync();
+                Log.Information($"Tipo_CuponModel con ID {id} actualizado exitosamente.");
             }
             catch (DbUpdateConcurrencyException)
             {
                 if (!Tipo_CuponModelExists(id))
                 {
+                    Log.Error($"No existe el Tipo_Cupon con esa id para actualizar, {id}");
                     return NotFound();
                 }
                 else
                 {
+                    Log.Error($"Error al actualizar el Tipo_Cupon con ID {id}");
                     throw;
                 }
             }
@@ -81,6 +88,7 @@ namespace CuponProyecto.Controllers
             _context.Tipo_Cupon.Add(tipo_CuponModel);
             await _context.SaveChangesAsync();
 
+            Log.Information($"Tipo_Cupon creado exitosamente.");
             return CreatedAtAction("GetTipo_CuponModel", new { id = tipo_CuponModel.Id_Tipo_Cupon }, tipo_CuponModel);
         }
 
@@ -91,12 +99,14 @@ namespace CuponProyecto.Controllers
             var tipo_CuponModel = await _context.Tipo_Cupon.FindAsync(id);
             if (tipo_CuponModel == null)
             {
+                Log.Error($"Tipo_Cupon con ID {id} no existe para borrar.");
                 return NotFound();
             }
 
             _context.Tipo_Cupon.Remove(tipo_CuponModel);
             await _context.SaveChangesAsync();
 
+            Log.Information($"Tipo_Cupon con ID {id} borrado exitosamente.");
             return NoContent();
         }
 

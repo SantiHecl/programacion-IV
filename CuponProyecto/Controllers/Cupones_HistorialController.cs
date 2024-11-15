@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using CuponProyecto.Data;
 using CuponProyecto.Models;
+using Serilog;
 
 namespace CuponProyecto.Controllers
 {
@@ -25,6 +26,7 @@ namespace CuponProyecto.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Cupones_HistorialModel>>> GetCupones_Historial()
         {
+            Log.Information($"Se llamo a GetCuponesHistorial");
             return await _context.Cupones_Historial.ToListAsync();
         }
 
@@ -36,9 +38,10 @@ namespace CuponProyecto.Controllers
 
             if (cupones_HistorialModel == null)
             {
+                Log.Error($"GetCuponesId No existe el artiuclo con esa id, {id}");
                 return NotFound();
             }
-
+            Log.Information($"Se llamo a GetCuponesId");
             return cupones_HistorialModel;
         }
 
@@ -49,6 +52,7 @@ namespace CuponProyecto.Controllers
         {
             if (id != cupones_HistorialModel.id_Cupon)
             {
+                Log.Warning($"ID en la ruta ({id} no coincide con el ID del cupón ({cupones_HistorialModel.id_Cupon})");
                 return BadRequest();
             }
 
@@ -57,15 +61,18 @@ namespace CuponProyecto.Controllers
             try
             {
                 await _context.SaveChangesAsync();
+                Log.Information($"Cupon con ID {id} actualizado exitosamente.");
             }
             catch (DbUpdateConcurrencyException)
             {
                 if (!Cupones_HistorialModelExists(id))
                 {
+                    Log.Error($"No existe el cupón con esa id para actualizar, {id}");
                     return NotFound();
                 }
                 else
                 {
+                    Log.Error($"Error al actualizar el cupón con ID {id}");
                     throw;
                 }
             }
@@ -78,19 +85,24 @@ namespace CuponProyecto.Controllers
         [HttpPost]
         public async Task<ActionResult<Cupones_HistorialModel>> PostCupones_HistorialModel(Cupones_HistorialModel cupones_HistorialModel)
         {
+            
             _context.Cupones_Historial.Add(cupones_HistorialModel);
+            
             try
             {
                 await _context.SaveChangesAsync();
+                Log.Information($"Cupón con ID {cupones_HistorialModel.id_Cupon} creado exitosamente.", cupones_HistorialModel.id_Cupon);
             }
             catch (DbUpdateException)
             {
                 if (Cupones_HistorialModelExists(cupones_HistorialModel.id_Cupon))
                 {
+                    Log.Error($"El cupón con ID {cupones_HistorialModel.id_Cupon}. Ya existe.", cupones_HistorialModel.id_Cupon);
                     return Conflict();
                 }
                 else
                 {
+                    Log.Error($"Error al intentar crear el cupón con ID {cupones_HistorialModel.id_Cupon}.", cupones_HistorialModel.id_Cupon);
                     throw;
                 }
             }
@@ -105,12 +117,14 @@ namespace CuponProyecto.Controllers
             var cupones_HistorialModel = await _context.Cupones_Historial.FindAsync(id);
             if (cupones_HistorialModel == null)
             {
+                Log.Error($"Cupón con ID {id} no existe para borrar.");
                 return NotFound();
             }
 
             _context.Cupones_Historial.Remove(cupones_HistorialModel);
             await _context.SaveChangesAsync();
 
+            Log.Error($"Cupón con ID {id} borrado exitosamente.");
             return NoContent();
         }
 

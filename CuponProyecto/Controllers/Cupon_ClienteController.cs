@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using CuponProyecto.Data;
 using CuponProyecto.Models;
+using Serilog;
 
 namespace CuponProyecto.Controllers
 {
@@ -25,6 +26,7 @@ namespace CuponProyecto.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Cupon_ClienteModel>>> GetCupones_Clientes()
         {
+            Log.Information($"Se llamo a GetCupones_Clientes");
             return await _context.Cupones_Clientes.ToListAsync();
         }
 
@@ -36,9 +38,10 @@ namespace CuponProyecto.Controllers
 
             if (cupon_ClienteModel == null)
             {
+                Log.Error($"GetCupones_ClientesId No existe el articulo con esa id, {id}");
                 return NotFound();
             }
-
+            Log.Information($"Se llamo a GetCupones_ClientesId");
             return cupon_ClienteModel;
         }
 
@@ -49,6 +52,7 @@ namespace CuponProyecto.Controllers
         {
             if (id != cupon_ClienteModel.NroCupon)
             {
+                Log.Warning($"ID en la ruta ({id}) no coincide con el ID del cupon ({cupon_ClienteModel.NroCupon})");
                 return BadRequest();
             }
 
@@ -57,15 +61,18 @@ namespace CuponProyecto.Controllers
             try
             {
                 await _context.SaveChangesAsync();
+                Log.Information($"Cupon_Cliente con ID {id} actualizado exitosamente.");
             }
             catch (DbUpdateConcurrencyException)
             {
                 if (!Cupon_ClienteModelExists(id))
                 {
+                    Log.Error($"No existe el Cupon_Cliente con esa id para actualizar, {id}");
                     return NotFound();
                 }
                 else
                 {
+                    Log.Error($"Error al actualizar el Cupon_Cliente con ID {id}");
                     throw;
                 }
             }
@@ -84,15 +91,18 @@ namespace CuponProyecto.Controllers
             try
             {
                 await _context.SaveChangesAsync();
+                Log.Information($"cupon_Cliente creado exitosamente.");
             }
             catch (DbUpdateException)
             {
                 if (Cupon_ClienteModelExists(cupon_ClienteModel.NroCupon))
                 {
+                    Log.Error($"Ya existe el Cupon_Cliente con {cupon_ClienteModel.NroCupon}");
                     return Conflict();
                 }
                 else
                 {
+                    Log.Error($"Error al crear el Cupon_Cliente");
                     throw;
                 }
             }
@@ -107,12 +117,14 @@ namespace CuponProyecto.Controllers
             var cupon_ClienteModel = await _context.Cupones_Clientes.FindAsync(id);
             if (cupon_ClienteModel == null)
             {
+                Log.Error($"Cupon_Cliente con ID {id} no existe para borrar.");
                 return NotFound();
             }
 
             _context.Cupones_Clientes.Remove(cupon_ClienteModel);
             await _context.SaveChangesAsync();
 
+            Log.Information($"Cupon_Cliente con ID {id} borrado exitosamente.");
             return NoContent();
         }
 

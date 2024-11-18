@@ -26,23 +26,40 @@ namespace CuponProyecto.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Cupones_DetallesModel>>> GetCupones_Detalles()
         {
-            Log.Information($"Se llamo a GetCupones_Detalles");
-            return await _context.Cupones_Detalle.ToListAsync();
+            try
+            {
+                Log.Information($"Se llamo a GetCupones_Detalles");
+                return await _context.Cupones_Detalle.ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                Log.Error($"GetCupones_Detalles error, {ex.Message}");
+                return BadRequest($"Hubo un problema en GetCupones_Detalles, error {ex.Message}");
+            }
         }
 
         // GET: api/Cupones_Detalles/5
         [HttpGet("{idCupon}/{idArticulo}")]
         public async Task<ActionResult<IEnumerable<Cupones_DetallesModel>>> GetCupones_DetallesModel(int idCupon, int idArticulo)
         {
-            var cupones_DetallesModel = await _context.Cupones_Detalle.Where(cd=> cd.id_Cupon == idCupon && cd.id_Articulo==idArticulo).ToListAsync();
-
-            if (cupones_DetallesModel == null)
+            try
             {
-                Log.Error($"GetCupones_DetallesId No existe el cupon con esa id, {idCupon} / {idArticulo}");
-                return NotFound();
+                var cupones_DetallesModel = await _context.Cupones_Detalle.Where(cd => cd.id_Cupon == idCupon && cd.id_Articulo == idArticulo).ToListAsync();
+
+                if (cupones_DetallesModel == null)
+                {
+                    Log.Error($"GetCupones_DetallesId No existe el cupon con esa id, {idCupon} / {idArticulo}");
+                    return NotFound();
+                }
+                Log.Information($"Se llamo a GetCupones_DetallesId");
+                return cupones_DetallesModel;
             }
-            Log.Information($"Se llamo a GetCupones_DetallesId");
-            return cupones_DetallesModel;
+            catch (Exception ex)
+            {
+                Log.Error($"GetCupones_DetallesId error, {ex.Message}");
+                return BadRequest($"Hubo un problema en GetCupones_DetallesId, error {ex.Message}");
+            }
+
         }
 
         // PUT: api/Cupones_Detalles/5
@@ -85,29 +102,45 @@ namespace CuponProyecto.Controllers
         [HttpPost]
         public async Task<ActionResult<Cupones_DetallesModel>> PostCupones_DetallesModel(Cupones_DetallesModel cupones_DetallesModel)
         {
-            _context.Cupones_Detalle.Add(cupones_DetallesModel);
-            await _context.SaveChangesAsync();
+            try
+            {
+                _context.Cupones_Detalle.Add(cupones_DetallesModel);
+                await _context.SaveChangesAsync();
 
-            Log.Information($"Cupones_Detalles creado exitosamente.");
-            return CreatedAtAction("GetCupones_DetallesModel", new { id = cupones_DetallesModel.id_Cupon }, cupones_DetallesModel);
+                Log.Information($"Cupones_Detalles creado exitosamente.");
+                return CreatedAtAction("GetCupones_DetallesModel", new { id = cupones_DetallesModel.id_Cupon }, cupones_DetallesModel);
+            }
+            catch (Exception ex)
+            {
+                Log.Error($"PostCupones_Detalles error, {ex.Message}");
+                return BadRequest($"Hubo un problema en PostCupones_Detalles, error {ex.Message}");
+            }
         }
 
         // DELETE: api/Cupones_Detalles/5
         [HttpDelete("{idCupon}/{idArticulo}")]
         public async Task<IActionResult> DeleteCupones_DetallesModel(int idCupon, int idArticulo)
         {
-            var cupones_DetallesModel = await _context.Cupones_Detalle.FindAsync(idCupon, idArticulo);
-            if (cupones_DetallesModel == null)
+            try
             {
-                Log.Error($"Cupones_Detalles con ID {idCupon}, {idArticulo} no existe para borrar.");
-                return NotFound();
+                var cupones_DetallesModel = await _context.Cupones_Detalle.FindAsync(idCupon, idArticulo);
+                if (cupones_DetallesModel == null)
+                {
+                    Log.Error($"Cupones_Detalles con ID {idCupon}, {idArticulo} no existe para borrar.");
+                    return NotFound();
+                }
+
+                _context.Cupones_Detalle.Remove(cupones_DetallesModel);
+                await _context.SaveChangesAsync();
+
+                Log.Information($"Cupones_Detalles con ID {idCupon}, {idArticulo} borrado exitosamente.");
+                return NoContent();
             }
-
-            _context.Cupones_Detalle.Remove(cupones_DetallesModel);
-            await _context.SaveChangesAsync();
-
-            Log.Information($"Cupones_Detalles con ID {idCupon}, {idArticulo} borrado exitosamente.");
-            return NoContent();
+            catch (Exception ex)
+            {
+                Log.Error($"DeleteCupones_Detalles error, {ex.Message}");
+                return BadRequest($"Hubo un problema en DeleteCupones_Detalles, error {ex.Message}");
+            }
         }
 
         private bool Cupones_DetallesModelExists(int id)

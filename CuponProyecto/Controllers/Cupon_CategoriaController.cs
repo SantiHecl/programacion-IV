@@ -26,23 +26,40 @@ namespace CuponProyecto.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Cupon_CategoriaModel>>> GetCupon_CategoriaModel()
         {
-            Log.Information($"Se llamo a GetCuponCategoria");
-            return await _context.Cupones_Categorias.ToListAsync();
+            try
+            {
+                Log.Information($"Se llamo a GetCuponCategoria");
+                return await _context.Cupones_Categorias.ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                Log.Error($"GetCupon_Categoria error, {ex.Message}");
+                return BadRequest($"Hubo un problema en GetCupon_Categoria, error {ex.Message}");
+            }
         }
 
         // GET: api/Cupon_Categoria/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Cupon_CategoriaModel>> GetCupon_CategoriaModel(int id)
         {
-            var cupon_CategoriaModel = await _context.Cupones_Categorias.FindAsync(id);
-
-            if (cupon_CategoriaModel == null)
+            try
             {
-                Log.Error($"GetCupon_CategoriaId No existe el articulo con esa id, {id}");
-                return NotFound();
+                var cupon_CategoriaModel = await _context.Cupones_Categorias.FindAsync(id);
+
+                if (cupon_CategoriaModel == null)
+                {
+                    Log.Error($"GetCupon_CategoriaId No existe el articulo con esa id, {id}");
+                    return NotFound();
+                }
+                Log.Information($"Se llamo a GetCupon_CategoriaId");
+                return cupon_CategoriaModel;
             }
-            Log.Information($"Se llamo a GetCupon_CategoriaId");
-            return cupon_CategoriaModel;
+            catch (Exception ex)
+            {
+                Log.Error($"GetCupon_CategoriaId error, {ex.Message}");
+                return BadRequest($"Hubo un problema en GetCupon_CategoriaId, error {ex.Message}");
+            }
+
         }
 
         // PUT: api/Cupon_Categoria/5
@@ -85,29 +102,45 @@ namespace CuponProyecto.Controllers
         [HttpPost]
         public async Task<ActionResult<Cupon_CategoriaModel>> PostCupon_CategoriaModel(Cupon_CategoriaModel cupon_CategoriaModel)
         {
-            _context.Cupones_Categorias.Add(cupon_CategoriaModel);
-            await _context.SaveChangesAsync();
+            try
+            {
+                _context.Cupones_Categorias.Add(cupon_CategoriaModel);
+                await _context.SaveChangesAsync();
 
-            Log.Information($"Cupon_Categoria creado exitosamente.");
-            return CreatedAtAction("GetCupon_CategoriaModel", new { id = cupon_CategoriaModel.Id_Cupones_Categorias }, cupon_CategoriaModel);
+                Log.Information($"Cupon_Categoria creado exitosamente.");
+                return CreatedAtAction("GetCupon_CategoriaModel", new { id = cupon_CategoriaModel.Id_Cupones_Categorias }, cupon_CategoriaModel);
+            }
+            catch (Exception ex)
+            {
+                Log.Error($"PostCupon_Categoria error, {ex.Message}");
+                return BadRequest($"Hubo un problema en PostCupon_Categoria, error {ex.Message}");
+            }
         }
 
         // DELETE: api/Cupon_Categoria/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCupon_CategoriaModel(int id)
         {
-            var cupon_CategoriaModel = await _context.Cupones_Categorias.FindAsync(id);
-            if (cupon_CategoriaModel == null)
+            try
             {
-                Log.Error($"Cupon_Categoria con ID {id} no existe para borrar.");
-                return NotFound();
+                var cupon_CategoriaModel = await _context.Cupones_Categorias.FindAsync(id);
+                if (cupon_CategoriaModel == null)
+                {
+                    Log.Error($"Cupon_Categoria con ID {id} no existe para borrar.");
+                    return NotFound();
+                }
+
+                _context.Cupones_Categorias.Remove(cupon_CategoriaModel);
+                await _context.SaveChangesAsync();
+
+                Log.Information($"Cupon_Categoria con ID {id} borrado exitosamente.");
+                return NoContent();
             }
-
-            _context.Cupones_Categorias.Remove(cupon_CategoriaModel);
-            await _context.SaveChangesAsync();
-
-            Log.Information($"Cupon_Categoria con ID {id} borrado exitosamente.");
-            return NoContent();
+            catch (Exception ex)
+            {
+                Log.Error($"DeleteCupon_Categoria error, {ex.Message}");
+                return BadRequest($"Hubo un problema en DeleteCupon_Categoria, error {ex.Message}");
+            }
         }
 
         private bool Cupon_CategoriaModelExists(int id)

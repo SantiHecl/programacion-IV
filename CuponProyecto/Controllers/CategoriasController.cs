@@ -26,28 +26,39 @@ namespace CuponProyecto.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<CategoriaModel>>> GetCategorias()
         {
-            Log.Information($"Se llamo a GetCategoria");
-            /*return await _context
-                .Categorias
-                .Include(c => c.Cupones_Categorias)
-                .ThenInclude (cc => cc.Cupon)
-                .ToListAsync();*/
-            return await _context.Categorias.Include(a => a.Cupones_Categorias).ToListAsync();
+            try
+            {
+                Log.Information($"Se llamo a GetCategoria");
+                return await _context.Categorias.Include(a => a.Cupones_Categorias).ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                Log.Error($"GetCategorias error, {ex.Message}");
+                return BadRequest($"Hubo un problema en GetCategorias, error {ex.Message}");
+            }
         }
 
         // GET: api/Categorias/5
         [HttpGet("{id}")]
         public async Task<ActionResult<CategoriaModel>> GetCategoriaModel(int id)
         {
-            var categoriaModel = await _context.Categorias.FindAsync(id);
-
-            if (categoriaModel == null)
+            try
             {
-                Log.Error($"no existe id {id} en GetCategoriaId");
-                return NotFound();
+                var categoriaModel = await _context.Categorias.FindAsync(id);
+
+                if (categoriaModel == null)
+                {
+                    Log.Error($"no existe id {id} en GetCategoriaId");
+                    return NotFound();
+                }
+                Log.Information($"Se llamo a GetCategoriaId");
+                return categoriaModel;
             }
-            Log.Information($"Se llamo a GetCategoriaId");
-            return categoriaModel;
+            catch (Exception ex)
+            {
+                Log.Error($"GetCategoriaId error, {ex.Message}");
+                return BadRequest($"Hubo un problema en GetCategoriaId, error {ex.Message}");
+            }
         }
 
         // PUT: api/Categorias/5
@@ -90,29 +101,44 @@ namespace CuponProyecto.Controllers
         [HttpPost]
         public async Task<ActionResult<CategoriaModel>> PostCategoriaModel(CategoriaModel categoriaModel)
         {
-            _context.Categorias.Add(categoriaModel);
-            await _context.SaveChangesAsync();
+            try
+            {
+                _context.Categorias.Add(categoriaModel);
+                await _context.SaveChangesAsync();
 
-            Log.Information($"Categoria creada exitosamente.");
-            return CreatedAtAction("GetCategoriaModel", new { id = categoriaModel.Id_Categoria }, categoriaModel);
+                Log.Information($"Categoria creada exitosamente.");
+                return CreatedAtAction("GetCategoriaModel", new { id = categoriaModel.Id_Categoria }, categoriaModel);
+            }
+            catch (Exception ex)
+            {
+                Log.Error($"PostCategoria error, {ex.Message}");
+                return BadRequest($"Hubo un problema en PostCategoria, error {ex.Message}");
+            }
         }
 
         // DELETE: api/Categorias/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCategoriaModel(int id)
         {
-            var categoriaModel = await _context.Categorias.FindAsync(id);
-            if (categoriaModel == null)
+            try
             {
-                Log.Error($"Artículo con ID {id} no existe para borrar.");
-                return NotFound();
+                var categoriaModel = await _context.Categorias.FindAsync(id);
+                if (categoriaModel == null)
+                {
+                    Log.Error($"Artículo con ID {id} no existe para borrar.");
+                    return NotFound();
+                }
+
+                _context.Categorias.Remove(categoriaModel);
+                await _context.SaveChangesAsync();
+
+                Log.Information($"Se elimino Categoria");
+                return NoContent();
             }
-
-            _context.Categorias.Remove(categoriaModel);
-            await _context.SaveChangesAsync();
-
-            Log.Information($"Se elimino Categoria");
-            return NoContent();
+            catch (Exception ex) {
+                Log.Error($"DeleteCategoria error, {ex.Message}");
+                return BadRequest($"Hubo un problema en DeleteCategoria, error {ex.Message}");
+            }
         }
 
         private bool CategoriaModelExists(int id)

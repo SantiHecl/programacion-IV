@@ -29,23 +29,40 @@ namespace CuponProyecto.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Cupon_ClienteModel>>> GetCupones_Clientes()
         {
-            Log.Information($"Se llamo a GetCupones_Clientes");
-            return await _context.Cupones_Clientes.ToListAsync();
+            try
+            {
+                Log.Information($"Se llamo a GetCupones_Clientes");
+                return await _context.Cupones_Clientes.ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                Log.Error($"GetCupones_Clientes error, {ex.Message}");
+                return BadRequest($"Hubo un problema en GetCupones_Clientes, error {ex.Message}");
+            }
         }
 
         // GET: api/Cupon_Cliente/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Cupon_ClienteModel>> GetCupon_ClienteModel(string id)
         {
-            var cupon_ClienteModel = await _context.Cupones_Clientes.FindAsync(id);
-
-            if (cupon_ClienteModel == null)
+            try
             {
-                Log.Error($"GetCupones_ClientesId No existe el articulo con esa id, {id}");
-                return NotFound();
+                var cupon_ClienteModel = await _context.Cupones_Clientes.FindAsync(id);
+
+                if (cupon_ClienteModel == null)
+                {
+                    Log.Error($"GetCupones_ClientesId No existe el articulo con esa id, {id}");
+                    return NotFound();
+                }
+                Log.Information($"Se llamo a GetCupones_ClientesId");
+                return cupon_ClienteModel;
             }
-            Log.Information($"Se llamo a GetCupones_ClientesId");
-            return cupon_ClienteModel;
+            catch (Exception ex)
+            {
+                Log.Error($"GetCupones_ClientesId error, {ex.Message}");
+                return BadRequest($"Hubo un problema en GetCupones_ClientesId, error {ex.Message}");
+            }
+
         }
 
         // PUT: api/Cupon_Cliente/5
@@ -118,18 +135,26 @@ namespace CuponProyecto.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCupon_ClienteModel(string id)
         {
-            var cupon_ClienteModel = await _context.Cupones_Clientes.FindAsync(id);
-            if (cupon_ClienteModel == null)
+            try
             {
-                Log.Error($"Cupon_Cliente con ID {id} no existe para borrar.");
-                return NotFound();
+                var cupon_ClienteModel = await _context.Cupones_Clientes.FindAsync(id);
+                if (cupon_ClienteModel == null)
+                {
+                    Log.Error($"Cupon_Cliente con ID {id} no existe para borrar.");
+                    return NotFound();
+                }
+
+                _context.Cupones_Clientes.Remove(cupon_ClienteModel);
+                await _context.SaveChangesAsync();
+
+                Log.Information($"Cupon_Cliente con ID {id} borrado exitosamente.");
+                return NoContent();
             }
-
-            _context.Cupones_Clientes.Remove(cupon_ClienteModel);
-            await _context.SaveChangesAsync();
-
-            Log.Information($"Cupon_Cliente con ID {id} borrado exitosamente.");
-            return NoContent();
+            catch (Exception ex)
+            {
+                Log.Error($"DeleteCupon_Cliente error, {ex.Message}");
+                return BadRequest($"Hubo un problema en DeleteCupon_Cliente, error {ex.Message}");
+            }
         }
 
         private bool Cupon_ClienteModelExists(string id)

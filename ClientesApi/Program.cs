@@ -2,11 +2,22 @@ using ClientesApi.Data;
 using ClientesApi.Interfaces;
 using ClientesApi.Services;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+
+Log.Logger = new LoggerConfiguration()
+    .Enrich.FromLogContext()
+    .WriteTo.Logger(l =>
+    l.Filter.ByIncludingOnly(evt => evt.Level == Serilog.Events.LogEventLevel.Error)
+    .WriteTo.File("Logs/Log-Error-.txt", rollingInterval: RollingInterval.Day))
+    .WriteTo.Logger(l =>
+    l.Filter.ByIncludingOnly(evt => evt.Level == Serilog.Events.LogEventLevel.Information)
+    .WriteTo.File("Logs/Log-.txt", rollingInterval: RollingInterval.Day))
+    .CreateLogger();
 
 builder.Services.AddDbContext<DataBaseContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("dbContext")));

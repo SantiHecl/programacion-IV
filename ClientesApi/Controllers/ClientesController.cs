@@ -9,6 +9,7 @@ using ClientesApi.Data;
 using ClientesApi.Models;
 using ClientesApi.Interfaces;
 using ClientesApi.Models.DTO;
+using Serilog;
 
 namespace ClientesApi.Controllers
 {
@@ -29,6 +30,7 @@ namespace ClientesApi.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ClientesModel>>> GetClientes()
         {
+            Log.Information($"Se llamo a GetClientes");
             return await _context.Clientes.ToListAsync();
         }
 
@@ -40,9 +42,10 @@ namespace ClientesApi.Controllers
 
             if (clientesModel == null)
             {
+                Log.Error($"GetClienteByCodCliente No existe el cliente con el código {codCliente}");
                 return NotFound();
             }
-
+            Log.Information($"Se llamo a GetClienteByCodCliente");
             return clientesModel;
         }
 
@@ -53,6 +56,7 @@ namespace ClientesApi.Controllers
         {
             if (codCliente != clientesModel.CodCliente)
             {
+                Log.Warning($"El código del cliente {codCliente} no coincide con el cliente que desea modificar {clientesModel.CodCliente}");
                 return BadRequest();
             }
 
@@ -61,15 +65,18 @@ namespace ClientesApi.Controllers
             try
             {
                 await _context.SaveChangesAsync();
+                Log.Information($"Cliente con el código {codCliente} actualizado exitosamente.");
             }
             catch (DbUpdateConcurrencyException)
             {
                 if (!ClienteExiste(codCliente))
                 {
+                    Log.Error($"No existe el cliente con ese código para actualizar. {codCliente}");
                     return NotFound();
                 }
                 else
                 {
+                    Log.Error($"Error al actualizar al cliente con el código {codCliente}");
                     throw;
                 }
             }
@@ -86,15 +93,18 @@ namespace ClientesApi.Controllers
             try
             {
                 await _context.SaveChangesAsync();
+                Log.Information($"Se dio de alta exitosamente el cliente.");
             }
             catch (DbUpdateException)
             {
                 if (ClienteExiste(clientesModel.CodCliente))
                 {
+                    Log.Error($"Ya existe un cliente con ese código {clientesModel.CodCliente}");
                     return Conflict();
                 }
                 else
                 {
+                    Log.Error($"Error al crear Cliente");
                     throw;
                 }
             }
@@ -109,12 +119,14 @@ namespace ClientesApi.Controllers
             var clientesModel = await _context.Clientes.FindAsync(codCliente);
             if (clientesModel == null)
             {
+                Log.Error($"Cliente con el código {codCliente} no existe apra borrar.");
                 return NotFound();
             }
 
             _context.Clientes.Remove(clientesModel);
             await _context.SaveChangesAsync();
 
+            Log.Information($"Cliente con el código {codCliente} borrado exitosamente.");
             return NoContent();
         }
 

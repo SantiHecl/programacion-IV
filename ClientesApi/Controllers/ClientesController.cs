@@ -30,23 +30,39 @@ namespace ClientesApi.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ClientesModel>>> GetClientes()
         {
-            Log.Information($"Se llamo a GetClientes");
-            return await _context.Clientes.ToListAsync();
+            try
+            {
+                Log.Information($"Se llamo a GetClientes");
+                return await _context.Clientes.ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                Log.Error($"GetClientes error, {ex.Message}");
+                return BadRequest($"Hubo un problema en GetClientes, error {ex.Message}");
+            }
         }
 
         // GET: api/Clientes/5
         [HttpGet("{codCliente}")]
         public async Task<ActionResult<ClientesModel>> GetClienteByCodCliente(string codCliente)
         {
-            var clientesModel = await _context.Clientes.FindAsync(codCliente);
-
-            if (clientesModel == null)
+            try
             {
-                Log.Error($"GetClienteByCodCliente No existe el cliente con el código {codCliente}");
-                return NotFound();
+                var clientesModel = await _context.Clientes.FindAsync(codCliente);
+
+                if (clientesModel == null)
+                {
+                    Log.Error($"GetClienteByCodCliente No existe el cliente con el código {codCliente}");
+                    return NotFound();
+                }
+                Log.Information($"Se llamo a GetClienteByCodCliente");
+                return clientesModel;
             }
-            Log.Information($"Se llamo a GetClienteByCodCliente");
-            return clientesModel;
+            catch (Exception ex) 
+            {
+                Log.Error($"GetClienteByCodCliente error, {ex.Message}");
+                return BadRequest($"Hubo un problema en GetClienteByCodCliente, error {ex.Message}");
+            }
         }
 
         // PUT: api/Clientes/5
@@ -116,18 +132,26 @@ namespace ClientesApi.Controllers
         [HttpDelete("{codCliente}")]
         public async Task<IActionResult> EliminarCliente(string codCliente)
         {
-            var clientesModel = await _context.Clientes.FindAsync(codCliente);
-            if (clientesModel == null)
+            try
             {
-                Log.Error($"Cliente con el código {codCliente} no existe apra borrar.");
-                return NotFound();
+                var clientesModel = await _context.Clientes.FindAsync(codCliente);
+                if (clientesModel == null)
+                {
+                    Log.Error($"Cliente con el código {codCliente} no existe apra borrar.");
+                    return NotFound();
+                }
+
+                _context.Clientes.Remove(clientesModel);
+                await _context.SaveChangesAsync();
+
+                Log.Information($"Cliente con el código {codCliente} borrado exitosamente.");
+                return NoContent();
             }
-
-            _context.Clientes.Remove(clientesModel);
-            await _context.SaveChangesAsync();
-
-            Log.Information($"Cliente con el código {codCliente} borrado exitosamente.");
-            return NoContent();
+            catch (Exception ex)
+            {
+                Log.Error($"EliminarCliente error, {ex.Message}");
+                return BadRequest($"Hubo un problema en EliminarCliente, error { ex.Message}" );
+            }
         }
 
         private bool ClienteExiste(string codCliente)

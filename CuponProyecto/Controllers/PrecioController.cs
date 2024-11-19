@@ -23,20 +23,36 @@ namespace CuponProyecto.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<PrecioModel>>> GetPrecios()
         {
-            Log.Information($"Se llamo a GetPrecios");
-            return await _context.Precios.Include(a => a.Articulo).ToListAsync();
+            try
+            {
+                Log.Information($"Se llamo a GetPrecios");
+                return await _context.Precios.Include(a => a.Articulo).ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                Log.Error($"GetPrecios error, {ex.Message}");
+                return BadRequest($"Hubo un problema en GetPrecios, error {ex.Message}");
+            }
         }
 
         // POST api/<PrecioController>
         [HttpPost]
         public async Task<ActionResult<PrecioModel>> PostPrecio(PrecioModel precioModel)
         {
-      
-            _context.Precios.Add(precioModel);
-            await _context.SaveChangesAsync();
+            try
+            {
+                _context.Precios.Add(precioModel);
+                await _context.SaveChangesAsync();
 
-            Log.Information($"Se le asigno el precio {precioModel.Precio} para el artículo con id {precioModel.Id_Articulo} exitosamente.");
-            return Ok(new { Message = "Precio creado y asignado al artículo", PrecioA = precioModel.Precio });
+                Log.Information($"Se le asigno el precio {precioModel.Precio} para el artículo con id {precioModel.Id_Articulo} exitosamente.");
+                return Ok(new { Message = "Precio creado y asignado al artículo", PrecioA = precioModel.Precio });
+
+            }
+            catch (Exception ex)
+            {
+                Log.Error($"PostPrecio error, {ex.Message}");
+                return BadRequest($"Hubo un problema en PostPrecio, error {ex.Message}");
+            }
         }
 
         // PUT api/<PrecioController>/5
@@ -77,22 +93,30 @@ namespace CuponProyecto.Controllers
         [HttpDelete("{idPrecio}")]
         public async Task<IActionResult> DeletePrecio(int idPrecio)
         {
-            var precio = await _context.Precios.FindAsync(idPrecio);
-
-            if (precio == null)
+            try
             {
-                Log.Error($"El artículo con el ID {idPrecio} no existe para borrar el precio.");
-                return NotFound("Artículo no encontrado.");
+                var precio = await _context.Precios.FindAsync(idPrecio);
+
+                if (precio == null)
+                {
+                    Log.Error($"El artículo con el ID {idPrecio} no existe para borrar el precio.");
+                    return NotFound("Artículo no encontrado.");
+                }
+
+                var articulo = await _context.Articulos.FindAsync(precio.Id_Articulo);
+                articulo.Precio.Precio = 0;
+
+                _context.Precios.Remove(precio);
+                await _context.SaveChangesAsync();
+
+                Log.Information($"Se elimino exitosamente el precio del artículo con el ID {idPrecio}.El artículo ahora tiene precio 0.");
+                return Ok(new { Message = "Precio eliminado. El artículo ahora tiene precio 0." });
             }
-            
-            var articulo = await _context.Articulos.FindAsync(precio.Id_Articulo);
-            articulo.Precio.Precio = 0;
-
-            _context.Precios.Remove(precio);
-            await _context.SaveChangesAsync();
-
-            Log.Information($"Se elimino exitosamente el precio del artículo con el ID {idPrecio}.El artículo ahora tiene precio 0.");
-            return Ok(new { Message = "Precio eliminado. El artículo ahora tiene precio 0." });
+            catch (Exception ex)
+            {
+                Log.Error($"DeletePrecio error, {ex.Message}");
+                return BadRequest($"Hubo un problema en DeletePrecio, error {ex.Message}");
+            }
         }
 
         private bool PrecioModelExists(int id)

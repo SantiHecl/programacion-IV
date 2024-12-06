@@ -41,11 +41,11 @@ namespace ClientesApi.Services
             }
         }
 
-        public async Task<string> QuemadoCupon(ClienteDto clienteDto)
+        public async Task<string> QuemadoCupon(string nroCupon)
         {
             try
             {
-                var jsonCliente = JsonConvert.SerializeObject(clienteDto);
+                var jsonCliente = JsonConvert.SerializeObject(nroCupon);
                 var contenido = new StringContent(jsonCliente, Encoding.UTF8, "application/json");
                 var cliente = new HttpClient();
                 var respuesta = await cliente.PostAsync("https://localhost:7040/api/SolicitudCupones/QuemadoCupon", contenido);

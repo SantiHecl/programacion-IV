@@ -3,6 +3,7 @@ using ClientesApi.Interfaces;
 using ClientesApi.Models.DTO;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace ClientesApi.Controllers
 {
@@ -34,11 +35,11 @@ namespace ClientesApi.Controllers
         }
 
         [HttpPost("UsarCupon")]
-        public async Task<IActionResult> UsarCupon([FromBody] ClienteDto clienteDto)
+        public async Task<IActionResult> UsarCupon(string nroCupon)
         {
             try
             {
-                var respuesta = await _clienteService.QuemadoCupon(clienteDto);
+                var respuesta = await _clienteService.QuemadoCupon(nroCupon);
                 return Ok(respuesta);
             }
             catch (Exception ex)
@@ -52,7 +53,7 @@ namespace ClientesApi.Controllers
         {
             try
             {
-                var respuesta = await _context.Clientes.FindAsync(codCliente);
+                var respuesta = await _clienteService.SolicitarCupon
                 return Ok(respuesta);
 
             }catch (Exception ex)

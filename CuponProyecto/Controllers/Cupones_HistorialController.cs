@@ -26,23 +26,40 @@ namespace CuponProyecto.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Cupones_HistorialModel>>> GetCupones_Historial()
         {
-            Log.Information($"Se llamo a GetCuponesHistorial");
-            return await _context.Cupones_Historial.ToListAsync();
+            try
+            {
+                Log.Information($"Se llamo a GetCuponesHistorial");
+                return await _context.Cupones_Historial.ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                Log.Error($"GetCuponesHistorial error, {ex.Message}");
+                return BadRequest($"Hubo un problema en GetCuponesHistorial, error {ex.Message}");
+            }
+            
         }
 
         // GET: api/Cupones_Historial/5
         [HttpGet("{idCupon}/{nroCupon}")]
         public async Task<ActionResult<Cupones_HistorialModel>> GetCupones_HistorialModel(int idCupon, string nroCupon)
         {
-            var cupones_HistorialModel = await _context.Cupones_Historial.FindAsync(idCupon, nroCupon);
-
-            if (cupones_HistorialModel == null)
+            try
             {
-                Log.Error($"GetCuponesId No existe el artiuclo con esa id, {idCupon}, {nroCupon}");
-                return NotFound();
+                var cupones_HistorialModel = await _context.Cupones_Historial.FindAsync(idCupon, nroCupon);
+
+                if (cupones_HistorialModel == null)
+                {
+                    Log.Error($"GetCuponesId No existe el artiuclo con esa id, {idCupon}, {nroCupon}");
+                    return NotFound();
+                }
+                Log.Information($"Se llamo a GetCuponesId");
+                return cupones_HistorialModel;
             }
-            Log.Information($"Se llamo a GetCuponesId");
-            return cupones_HistorialModel;
+            catch (Exception ex)
+            {
+                Log.Error($"GetCuponesHistorialId error, {ex.Message}");
+                return BadRequest($"Hubo un problema en GetCuponesHistorialId, error {ex.Message}");
+            }
         }
 
         // PUT: api/Cupones_Historial/5
@@ -113,18 +130,26 @@ namespace CuponProyecto.Controllers
         [HttpDelete("{idCupon}/{nroCupon}")]
         public async Task<IActionResult> DeleteCupones_HistorialModel(int idCupon, string nroCupon)
         {
-            var cupones_HistorialModel = await _context.Cupones_Historial.FindAsync(idCupon, nroCupon);
-            if (cupones_HistorialModel == null)
+            try
             {
-                Log.Error($"Cupón con ID {idCupon} no existe para borrar.");
-                return NotFound();
+                var cupones_HistorialModel = await _context.Cupones_Historial.FindAsync(idCupon, nroCupon);
+                if (cupones_HistorialModel == null)
+                {
+                    Log.Error($"Cupón con ID {idCupon} no existe para borrar.");
+                    return NotFound();
+                }
+
+                _context.Cupones_Historial.Remove(cupones_HistorialModel);
+                await _context.SaveChangesAsync();
+
+                Log.Error($"Cupón con ID {idCupon} borrado exitosamente.");
+                return NoContent();
             }
-
-            _context.Cupones_Historial.Remove(cupones_HistorialModel);
-            await _context.SaveChangesAsync();
-
-            Log.Error($"Cupón con ID {idCupon} borrado exitosamente.");
-            return NoContent();
+            catch (Exception ex)
+            {
+                Log.Error($"DeleteCupones_Historial error, {ex.Message}");
+                return BadRequest($"Hubo un problema en DeleteCupones_Historial, error {ex.Message}");
+            }
         }
 
         private bool Cupones_HistorialModelExists(int id)

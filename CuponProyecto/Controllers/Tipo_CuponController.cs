@@ -26,23 +26,39 @@ namespace CuponProyecto.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Tipo_CuponModel>>> GetTipo_Cupon()
         {
-            Log.Information($"Se llamo a GetTipo_Cupon");
-            return await _context.Tipo_Cupon.ToListAsync();
+            try
+            {
+                Log.Information($"Se llamo a GetTipo_Cupon");
+                return await _context.Tipo_Cupon.ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                Log.Error($"GetTipo_Cupon error, {ex.Message}");
+                return BadRequest($"Hubo un problema en GetTipo_Cupon, error {ex.Message}");
+            }
         }
 
         // GET: api/Tipo_Cupon/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Tipo_CuponModel>> GetTipo_CuponModel(int id)
         {
-            var tipo_CuponModel = await _context.Tipo_Cupon.FindAsync(id);
-
-            if (tipo_CuponModel == null)
+            try
             {
-                Log.Error($"GetTipo_CuponId No existe el tipo de cupón con esa id, {id}");
-                return NotFound();
+                var tipo_CuponModel = await _context.Tipo_Cupon.FindAsync(id);
+
+                if (tipo_CuponModel == null)
+                {
+                    Log.Error($"GetTipo_CuponId No existe el tipo de cupón con esa id, {id}");
+                    return NotFound();
+                }
+                Log.Information($"Se llamo a GetTipo_CuponesId");
+                return tipo_CuponModel;
             }
-            Log.Information($"Se llamo a GetTipo_CuponesId");
-            return tipo_CuponModel;
+            catch (Exception ex)
+            {
+                Log.Error($"GetTipo_CuponId error, {ex.Message}");
+                return BadRequest($"Hubo un problema en GetTipo_CuponId, error {ex.Message}");
+            }
         }
 
         // PUT: api/Tipo_Cupon/5
@@ -85,29 +101,45 @@ namespace CuponProyecto.Controllers
         [HttpPost]
         public async Task<ActionResult<Tipo_CuponModel>> PostTipo_CuponModel(Tipo_CuponModel tipo_CuponModel)
         {
-            _context.Tipo_Cupon.Add(tipo_CuponModel);
-            await _context.SaveChangesAsync();
+            try
+            {
+                _context.Tipo_Cupon.Add(tipo_CuponModel);
+                await _context.SaveChangesAsync();
 
-            Log.Information($"Tipo_Cupon creado exitosamente.");
-            return CreatedAtAction("GetTipo_CuponModel", new { id = tipo_CuponModel.Id_Tipo_Cupon }, tipo_CuponModel);
+                Log.Information($"Tipo_Cupon creado exitosamente.");
+                return CreatedAtAction("GetTipo_CuponModel", new { id = tipo_CuponModel.Id_Tipo_Cupon }, tipo_CuponModel);
+            }
+            catch(Exception ex)
+            {
+                Log.Error($"PostTipo_Cupon error, {ex.Message}");
+                return BadRequest($"Hubo un problema en PostTipo_Cupon, error {ex.Message}");
+            }
         }
 
         // DELETE: api/Tipo_Cupon/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteTipo_CuponModel(int id)
         {
-            var tipo_CuponModel = await _context.Tipo_Cupon.FindAsync(id);
-            if (tipo_CuponModel == null)
+            try
             {
-                Log.Error($"Tipo_Cupon con ID {id} no existe para borrar.");
-                return NotFound();
+                var tipo_CuponModel = await _context.Tipo_Cupon.FindAsync(id);
+                if (tipo_CuponModel == null)
+                {
+                    Log.Error($"Tipo_Cupon con ID {id} no existe para borrar.");
+                    return NotFound();
+                }
+
+                _context.Tipo_Cupon.Remove(tipo_CuponModel);
+                await _context.SaveChangesAsync();
+
+                Log.Information($"Tipo_Cupon con ID {id} borrado exitosamente.");
+                return NoContent();
             }
-
-            _context.Tipo_Cupon.Remove(tipo_CuponModel);
-            await _context.SaveChangesAsync();
-
-            Log.Information($"Tipo_Cupon con ID {id} borrado exitosamente.");
-            return NoContent();
+            catch (Exception ex)
+            {
+                Log.Error($"DeleteTipo_Cupon error, {ex.Message}");
+                return BadRequest($"Hubo un problema en DeleteTipo_Cupon, error {ex.Message}");
+            }
         }
 
         private bool Tipo_CuponModelExists(int id)

@@ -105,8 +105,6 @@ namespace CuponProyecto.Controllers
 
                 var articulo = await _context.Articulos.FindAsync(precio.Id_Articulo);
                 articulo.Precio.Precio = 0;
-
-                _context.Precios.Remove(precio);
                 await _context.SaveChangesAsync();
 
                 Log.Information($"Se elimino exitosamente el precio del artículo con el ID {idPrecio}.El artículo ahora tiene precio 0.");

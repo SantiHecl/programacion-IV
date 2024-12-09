@@ -3,6 +3,7 @@ using ClientesApi.Interfaces;
 using ClientesApi.Models.DTO;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Serilog;
 
 namespace ClientesApi.Controllers
@@ -43,6 +44,8 @@ namespace ClientesApi.Controllers
             try
             {
                 var respuesta = await _clienteService.QuemadoCupon(nroCupon);
+
+                Log.Information($"Se llamo a post UsarCupon");
                 return Ok(respuesta);
             }
             catch (Exception ex)
@@ -57,7 +60,11 @@ namespace ClientesApi.Controllers
         {
             try
             {
-                var respuesta = await _context.Clientes.FindAsync(codCliente);
+                var respuesta = await _context.Cupones_Clientes
+                    .Where(c => c.CodCliente == codCliente)
+                    .ToListAsync();
+
+                Log.Information($"Se llamo a ObtenerCuponesActivos");
                 return Ok(respuesta);
 
             }catch (Exception ex)

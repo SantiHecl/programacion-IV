@@ -103,6 +103,10 @@ namespace CuponProyecto.Controllers
         {
             try
             {
+                if (articuloModel.Precio == null)
+                {
+                    articuloModel.Precio = 0;
+                }
                 _context.Articulos.Add(articuloModel);
                 await _context.SaveChangesAsync();
 

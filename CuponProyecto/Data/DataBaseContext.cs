@@ -16,6 +16,7 @@ namespace CuponProyecto.Data
         public DbSet<ArticuloModel> Articulos { get; set; }
         public DbSet<PrecioModel> Precios { get; set; }
         public DbSet<Cupones_HistorialModel> Cupones_Historial { get; set; }
+        public DbSet<ClientesApi.Models.ClientesModel> Clientes { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

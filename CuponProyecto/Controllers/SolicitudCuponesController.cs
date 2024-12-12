@@ -39,7 +39,22 @@ namespace CuponProyecto.Controllers
                     throw new Exception("El código del cliente no puede estar vacío");
                 }
                 Log.Information($"Se solicito el cupón del cliente {clienteDto.CodCliente} exitosamente.");
+
+
+                var cliente = await _context.Clientes
+                                    .FirstOrDefaultAsync(c => c.CodCliente == clienteDto.CodCliente);
+
+                if (cliente == null)
+                {
+                    Log.Warning($"El cliente con el código {clienteDto.CodCliente} no existe.");
+                    throw new Exception("Cliente no encontrado");
+                }
+
+                string email = cliente.Email;
+
+                // Generar número de cupón automáticamente
                 string nroCupon = await _cuponesServices.GenerarNroCupon();
+
 
                 Cupon_ClienteModel cupon_Cliente = new Cupon_ClienteModel()
                 {
@@ -49,10 +64,13 @@ namespace CuponProyecto.Controllers
                     NroCupon = nroCupon
                 };
 
-                
+
                 _context.Cupones_Clientes.Add(cupon_Cliente);
                 await _context.SaveChangesAsync();
-                await _sendEmailService.EnviarEmailCliente(clienteDto.Email, nroCupon);
+
+                // Enviar correo automáticamente
+                await _sendEmailService.EnviarEmailCliente(email, nroCupon);
+
                 Log.Information($"Cupón creado y correo enviado exitosamente para el cliente con el código {clienteDto.CodCliente}");
                 return Ok(new
                 {
@@ -64,7 +82,7 @@ namespace CuponProyecto.Controllers
             {
                 Log.Error($"Error en la solicitud para el cliente con código {clienteDto.CodCliente}");
                 return BadRequest(ex.Message);
-            }           
+            }
         }
 
         [HttpPost("QuemadoCupon")]

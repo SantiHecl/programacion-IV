@@ -68,7 +68,7 @@ namespace CuponProyecto.Controllers
         }
 
         [HttpPost("QuemadoCupon")]
-        public async Task<IActionResult> QuemadoCupon(string nroCupon)
+        public async Task<IActionResult> QuemadoCupon([FromBody] string nroCupon)
         {
             try
             {

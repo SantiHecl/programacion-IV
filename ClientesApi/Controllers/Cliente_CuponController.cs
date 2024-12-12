@@ -39,7 +39,7 @@ namespace ClientesApi.Controllers
         }
 
         [HttpPost("UsarCupon")]
-        public async Task<IActionResult> UsarCupon(string nroCupon)
+        public async Task<IActionResult> UsarCupon([FromBody] string nroCupon)
         {
             try
             {

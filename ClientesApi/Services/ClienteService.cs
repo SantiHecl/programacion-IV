@@ -1,6 +1,7 @@
 ﻿using ClientesApi.Interfaces;
 using ClientesApi.Models;
 using ClientesApi.Models.DTO;
+using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Text;
 
@@ -41,7 +42,7 @@ namespace ClientesApi.Services
             }
         }
 
-        public async Task<string> QuemadoCupon(string nroCupon)
+        public async Task<string> QuemadoCupon([FromBody] string nroCupon)
         {
             try
             {

@@ -105,6 +105,7 @@ namespace CuponProyecto.Controllers
             {
                 if (articuloModel.Precio == null)
                 {
+                    Log.Warning("El precio del artículo fue null. Se creo el artículo con un valor de 0");
                     PrecioModel precio = new PrecioModel();
                     precio.Precio = 0;
                     articuloModel.Precio = precio;

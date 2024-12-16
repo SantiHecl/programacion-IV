@@ -26,7 +26,6 @@ namespace ClientesApi.Controllers
         {
             try
             {
-
                 var respuesta = await _clienteService.SolicitarCupon(clienteDto);
                 Log.Information($"Se solicito su cupón exitosamente.");
                 return Ok(respuesta);
@@ -55,7 +54,7 @@ namespace ClientesApi.Controllers
             }
         }
 
-        [HttpGet]
+        [HttpGet("ObtenerCuponesActivos")]
         public async Task<IActionResult> ObtenerCuponesActivos(string codCliente)
         {
             try
